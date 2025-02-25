@@ -13,14 +13,14 @@
     "n": 10000,
     "N": 100,
     "scheme": "Euler",
-    "strike_price": 4,
-    "maturity": 5.0,
 
     "output_dir": "data",
 
     "run_simulation" : true,
     "run_analysis" : true, 
-    "run_option_pricing" : true 
+    "run_option_pricing" : true, 
+    "strike_price": 4,
+    "maturity": 5.0
 
     
 

@@ -1,1 +1,18 @@
+# Python compiled files
 __pycache__/
+*.pyc
+
+# Fortran module files
+*.mod
+*.smod
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Local environment and IDE settings
+.vscode/
+*.swp
+
+# Specific folders
+archive/

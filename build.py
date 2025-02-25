@@ -2,8 +2,8 @@ import os
 import json 
 from datetime import datetime
 from utils import print_section
-from heston.heston import HestonModel 
-from heston.heston_analysis import plot_trajectory, price_option
+from models.heston import HestonModel 
+from analysis import plot_trajectory, price_option
 
 def main(config_file):
     # Load configuration from JSON file 

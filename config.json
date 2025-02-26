@@ -15,7 +15,7 @@
     "scheme": "Euler",
 
     "output_dir" : "data",
-    "do_timestamp" : false,
+    "do_timestamp" : true,
 
     "run_simulation" : true,
     "run_analysis" : true, 

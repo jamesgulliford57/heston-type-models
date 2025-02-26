@@ -15,10 +15,9 @@ class StochasticModel:
         diffusion : float, np.ndarray, or callable
             SDE diffusion coefficient 
         diffusion_prime : float, np.ndarray, or callable
-            Derivative of SDE diffusion coefficients. Some numerical solving schemes e.g. Milstein 
-            require this evaluation at each update step
+            Derivative of SDE diffusion coefficient required for some numerical solving schemes e.g. Milstein.
         **model_params : dict
-            Model parameters to evaluate mu and sigma and setup 
+            Model parameters to evaluate mu and sigma and setup. 
         """
         if not isinstance(drift, (float, np.ndarray)) and not callable(drift):
             raise TypeError(f'mu must be a float, np.ndarray, or callable but got {type(drift).__name__}')
@@ -42,6 +41,17 @@ class StochasticModel:
         """
         Simulates one path using the Euler-Maruyama scheme to solve the 
         SDE defined by mu and sigma.
+
+        Parameters
+        --- 
+        init_value : float, or list
+            Initial condition for solution trajectories.
+        n : int
+            Discretisation parameter, number of intervals to divide time horizon into.
+        h : float
+            Time step size.
+        t : np.ndarray
+            Time array to simulate over.
         """
         dim = len(init_value) # Identify dimension of solution
         samples, bm_samples = np.zeros((dim, n)), np.zeros((dim, n))  # Initialise sample and Brownian motion arrays
@@ -51,14 +61,26 @@ class StochasticModel:
             bm_step = np.random.normal(0, np.sqrt(h), dim)
             bm_samples[:, i] = bm_samples[:, i - 1] + bm_step
             samples[:, i] = samples[:, i - 1] + self.drift(samples[0, i - 1], samples[1, i - 1]) * h + np.dot(self.diffusion(samples[0, i - 1], samples[1, i - 1]), bm_step)
+        # Return time, price, and volatility samples
         return t, samples[0], samples[1]
     
     def _milstein_scheme(self, init_value, n, h, t):
         """
         Simulates one path using the Milstein scheme to solve the SDE defined by mu and sigma.
+        
+        Parameters
+        --- 
+        init_value : float, or list
+            Initial condition for solution trajectories.
+        n : int
+            Discretisation parameter, number of intervals to divide time horizon into.
+        h : float
+            Time step size.
+        t : np.ndarray
+            Time array to simulate over.
         """
         if not self.diffusion_prime:
-            raise ValueError('Diffusion_prime not provided. Derivative of diffusion coefficient is required to simulate Milstein scheme')
+            raise ValueError('Diffusion_prime not provided. Derivative of diffusion coefficient is required to simulate Milstein scheme.')
        
         dim = len(init_value) # Identify dimension of solution
         samples, bm_samples = np.zeros((dim, n)), np.zeros((dim, n))  # Initialise sample and Brownian motion arrays
@@ -73,6 +95,7 @@ class StochasticModel:
             samples[1, i] = (samples[1, i - 1] + self.drift(samples[0, i - 1], samples[1, i - 1])[1] * h
                              + self.diffusion(samples[0, i - 1], samples[1, i - 1])[1, 0] * bm_step[1]
                              + 0.5 * self.diffusion(samples[0, i - 1], samples[1, i - 1])[1, 0] * self.diffusion_prime(samples[0, i - 1], samples[1, i - 1])[1][1, 0] * (bm_step[1] ** 2 - h))
+        # Return time, price, and volatility samples
         return t, samples[0], samples[1]
     
     def simulate_model(self, init_value, T, n, N, output_directory, scheme='euler'):

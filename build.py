@@ -9,7 +9,6 @@ def main(config_file):
     # Load configuration from JSON file 
     with open(config_file, 'r') as f:
         config = json.load(f)
-
     # Model parameters
     heston_params = config["heston_params"] 
     # Simulation parameters
@@ -33,15 +32,13 @@ def main(config_file):
     timestamp = datetime.now().strftime("%d%m%y_%H%M%S")
     output_directory = os.path.join(output_dir, f'{scheme}_T={T}_n={n}_init={init_value}_N={N}', timestamp)
     os.makedirs(output_directory, exist_ok=True)
-
+    # Run simulation processes
     if run_simulation: 
         print_section(f'Initiating {scheme} scheme simulation with time horizon T={T} and discretisation parameter n={n}')
         heston1.simulate_model(init_value=init_value, T=T, n=n, N=N, output_directory=output_directory, scheme=scheme)
-
     if run_analysis:
         print_section(f'Analysing simulation results from {output_directory}...')
         plot_trajectory(output_directory)
-    
     if run_option_pricing:
         print_section(f'Pricing option with strike price K={strike_price} and maturity T_M={maturity}...')
         price_option(output_directory, strike_price, maturity)

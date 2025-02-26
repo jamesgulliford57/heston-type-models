@@ -30,6 +30,4 @@ class HestonModel(StochasticModel):
         derivative_V = np.array([[0.5 * S / np.sqrt(V), 0], [0.5 * self.rho * self.xi / np.sqrt(V), 0.5 * np.sqrt(1-self.rho**2) * self.xi / np.sqrt(V)]])
         return derivative_S, derivative_V
 
-#heston1 = HestonModel(r=0.2, lmbda=1.0, sigma=0.5, xi=1.0, rho=-0.5)
-#heston1.simulate_model(init_value=np.array([1, 0.16]), T=5, n=10000, N=100, scheme='euler')
 

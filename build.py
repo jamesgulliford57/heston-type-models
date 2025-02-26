@@ -24,7 +24,7 @@ def main(config_file):
     with open(config_file, 'r') as f:
         config = json.load(f)
     # Model parameters
-    heston_params = config["heston_params"] 
+    model_params = config["model_params"] 
     # Simulation parameters
     init_value = config["init_value"] 
     T = config["T"]
@@ -42,7 +42,7 @@ def main(config_file):
     run_option_pricing = config["run_option_pricing"]
 
     # Create instance 
-    heston1 = HestonModel(**heston_params)
+    heston1 = HestonModel(**model_params)
     
     # Create output directory
     if do_timestamp:

@@ -1,6 +1,6 @@
 {
 
-    "heston_params": {
+    "model_params": {
         "r": 0.2,
         "lmbda": 1.0,
         "sigma": 0.5,

@@ -12,9 +12,11 @@ pip install -r requirements.txt (requirements tbc)
 ```
 
 ## Configuration 
+Configuration can be set within the config.json file. 
+### Example Configuration
 ```bash
 {
-    "heston_params": {
+    "model_params": {
         "r": 0.2,
         "lmbda": 1.0,
         "sigma": 0.5,
@@ -39,7 +41,15 @@ pip install -r requirements.txt (requirements tbc)
     
 }
 ```
+model_params = parameters of model SDEs
 
+init_value = initial value of model variables
+T = time horizon, total simulation time
+n = discretisation parameter, number of incremenets
+N = number of independent simulations to perform
+scheme = numerical scheme to simulate solution
+
+ouput_dir = directory to output simulation files to
 ## To-do
 ### Fixes
 - Fix negative volatilities

@@ -21,6 +21,7 @@ def main(config_file):
     maturity = config["maturity"]
     # Directories
     output_dir = config["output_dir"]
+    do_timestamp = config["do_timestamp"]
     # Simulation controls
     run_simulation = config["run_simulation"]
     run_analysis = config["run_analysis"]
@@ -28,10 +29,15 @@ def main(config_file):
 
     # Create instance 
     heston1 = HestonModel(**heston_params)
+    
     # Create output directory
-    timestamp = datetime.now().strftime("%d%m%y_%H%M%S")
-    output_directory = os.path.join(output_dir, f'{scheme}_T={T}_n={n}_init={init_value}_N={N}', timestamp)
+    if do_timestamp:
+        timestamp = datetime.now().strftime("%d%m%y_%H%M%S")
+        output_directory = os.path.join(output_dir, f'{scheme}_T={T}_n={n}_init={init_value}_N={N}', timestamp)
+    else:
+        output_directory = os.path.join(output_dir, f'{scheme}_T={T}_n={n}_init={init_value}_N={N}')
     os.makedirs(output_directory, exist_ok=True)
+    
     # Run simulation processes
     if run_simulation: 
         print_section(f'Initiating {scheme} scheme simulation with time horizon T={T} and discretisation parameter n={n}')

@@ -6,7 +6,7 @@ from utils import write_npy, write_json
 class StochasticModel:
     def __init__(self, drift, diffusion, diffusion_prime=None, **model_params):
         """
-        Superclass for general SDEs with built in methods to produce numerical solutions
+        Superclass for general SDEs with built in methods to produce numerical solutions.
 
         Parameters
         ---
@@ -41,7 +41,7 @@ class StochasticModel:
     def _euler_maryuama_scheme(self, init_value, n, h, t):
         """
         Simulates one path using the Euler-Maruyama scheme to solve the 
-        SDE defined by mu and sigma
+        SDE defined by mu and sigma.
         """
         dim = len(init_value) # Identify dimension of solution
         samples, bm_samples = np.zeros((dim, n)), np.zeros((dim, n))  # Initialise sample and Brownian motion arrays
@@ -55,7 +55,7 @@ class StochasticModel:
     
     def _milstein_scheme(self, init_value, n, h, t):
         """
-        Simulates one path using the Milstein scheme to solve the SDE defined by mu and sigma
+        Simulates one path using the Milstein scheme to solve the SDE defined by mu and sigma.
         """
         if not self.diffusion_prime:
             raise ValueError('Diffusion_prime not provided. Derivative of diffusion coefficient is required to simulate Milstein scheme')
@@ -77,20 +77,20 @@ class StochasticModel:
     
     def simulate_model(self, init_value, T, n, N, output_directory, scheme='euler'):
         """
-        Simulates numerical solution to SDE defined by mu and sigma using provided numerical scheme
+        Simulates numerical solution to SDE defined by mu and sigma using provided numerical scheme.
         
         Parameters
         ---
         init_value : float, or np.ndarray
-            Initial condition for random solution trajectories, provided as 1D row array
+            Initial condition for random solution trajectories, provided as 1D row array.
         T : float or int 
             Time horizon, simulation runs from t = 0 to t = T
         n : int 
-            Discretisation parameter, number of intervals T is divided into
+            Discretisation parameter, number of intervals T is divided into.
         N : int or float
-            Number of trajectories to be simulated
+            Number of trajectories to be simulated.
         scheme : str 
-            Defines scheme to be use to simulate model from 'euler', 'milstein'
+            Defines scheme to be use to simulate model from 'euler', 'milstein'.
         """
         # Initialise price and volatility arrays to hold N samples with parameter n
         all_S = np.zeros((N, n)) # Note, at the moment this is specific to a (S, V) model 
@@ -117,4 +117,3 @@ class StochasticModel:
         sim_params = {'init_value' : list(init_value), 'T' : T, 'n' : n, 'N': N, 'scheme' : scheme}
         params = self.model_params | sim_params
         write_json(output_directory, params=params) # Parameters
-        

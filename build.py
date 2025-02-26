@@ -6,6 +6,20 @@ from models.heston import HestonModel
 from analysis import plot_trajectory, price_option
 
 def main(config_file):
+    """
+    Main function runs workflow based on config file 'config.json'.
+
+    Parameters
+    ---
+    config_file : str
+        Path to config file containing simulation parameters and options
+
+    Workflow
+    ---
+        - Initialises selected model with provided parameters.
+        - Creates directory for saving simulation results and parameters.
+        - Runs simulation, analysis, and option pricing based on the config.
+    """
     # Load configuration from JSON file 
     with open(config_file, 'r') as f:
         config = json.load(f)

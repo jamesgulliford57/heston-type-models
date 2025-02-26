@@ -1,12 +1,13 @@
 import numpy as np
-from tqdm import tqdm
-from functools import wraps
 
 def write_npy(output_directory, **data_arrays):
         """
-        Write simulation data with a timestamp for uniqueness.
-        Parameters:
-        folder_name: provide name of folder in format f"...{}..."
+        Write simulation data to npy files to provided output directory.
+
+        Parameters
+        ---
+        output_directory : str
+            Path to directory where data will be saved.
         **data_arrays: keyword arguments
             Each keyword corresponds to the name of the array, and the value is the array to be saved.
         """
@@ -22,8 +23,11 @@ def write_npy(output_directory, **data_arrays):
 def write_json(output_directory, **data_arrays):
         """
         Write simulation data with a timestamp for uniqueness.
-        Parameters:
-        folder_name: provide name of folder in format f"...{}..."
+
+        Parameters
+        ---
+        output_directory : str
+            Path to directory where data will be saved.
         **data_arrays: keyword arguments
             Each keyword corresponds to the name of the array, and the value is the array to be saved.
         """
@@ -38,11 +42,22 @@ def write_json(output_directory, **data_arrays):
 
         print(f"Data saved in {output_directory}")
 
-def print_section(message, empty_lines_before=1, empty_lines_after=1, separator_length=30):
+def print_section(message, empty_lines_before=1, empty_lines_after=1):
     """
     Print a formatted section with separators and optional empty lines.
+
+    Parameters
+    ---
+    message : str
+        Message to be displayed in the section.
+    empty_lines_before : int
+        Number of empty lines to be printed before the section.
+    empty_lines_after : int
+        Number of empty lines to be printed after the section.
     """
     from colorama import Fore, Style
+    
+    separator_length=len(message)
     print("\n" * empty_lines_before, end="")  # Add empty lines before the section
     print(Fore.GREEN + "=" * separator_length)
     print(Fore.GREEN + message)
@@ -51,12 +66,18 @@ def print_section(message, empty_lines_before=1, empty_lines_after=1, separator_
 
 def progress_bar_decorator(desc="Simulating", unit="step"):
     """
-    Decorator that provides a tqdm progress bar in your function.
-    
-    Expects the wrapped function to have an `N` keyword argument
-    (the total number of steps) and optionally accept a `pbar` keyword 
-    argument (which will be the tqdm progress bar).
+    Decorator that provides tqdm progress bar.
+
+    Parameters
+    ---
+    desc : str
+        Description of the progress bar.
+    unit : str  
+        Unit of the progress bar.
     """
+    from tqdm import tqdm
+    from functools import wraps
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):

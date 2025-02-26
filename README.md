@@ -41,15 +41,11 @@ Configuration can be set within the config.json file.
     
 }
 ```
-model_params = parameters of model SDEs
+## Run
+```bash
+python main.py --config config.json
+```
 
-init_value = initial value of model variables
-T = time horizon, total simulation time
-n = discretisation parameter, number of incremenets
-N = number of independent simulations to perform
-scheme = numerical scheme to simulate solution
-
-ouput_dir = directory to output simulation files to
 ## To-do
 ### Fixes
 - Fix negative volatilities

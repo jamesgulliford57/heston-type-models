@@ -52,8 +52,8 @@ class HestonModel(StochasticModel):
         V : float
             Volatility
         """
-        derivative_S = np.array([[np.sqrt(V), 0], [0, 0]])
-        derivative_V = np.array([[0.5 * S / np.sqrt(V), 0], [0.5 * self.rho * self.xi / np.sqrt(V), 0.5 * np.sqrt(1-self.rho**2) * self.xi / np.sqrt(V)]])
+        derivative_S = np.array([[np.sqrt(abs(V)), 0], [0, 0]])
+        derivative_V = np.array([[0.5 * S / np.sqrt(abs(V)), 0], [0.5 * self.rho * self.xi / np.sqrt(abs(V)), 0.5 * np.sqrt(1-self.rho**2) * self.xi / np.sqrt(abs(V))]])
         return derivative_S, derivative_V
 
 

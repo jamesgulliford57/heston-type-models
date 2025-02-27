@@ -43,7 +43,7 @@ Configuration can be set within the config.json file.
 ```
 ## Run
 ```bash
-python main.py --config config.json
+python build.py --config config.json
 ```
 
 ## To-do

@@ -68,3 +68,4 @@ python build.py --config config.json
 
 ### New Directions
 - Exact simulation of diffusions
+- Neural ODEs

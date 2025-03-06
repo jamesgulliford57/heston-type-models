@@ -1,22 +1,37 @@
 import numpy as np
 from models.stochastic_model import StochasticModel
 
-class HestonModel(StochasticModel):
+class Heston(StochasticModel):
+    """
+    Heston model describing random evolution of stock price and 
+    associated stochastic volatility.
+    """
     def __init__(self, **model_params):
         """
-        Heston model is a stochastic model describing the random evolution
-        of a stock price and associated volatility.
 
         Parameters
         ---
+        state : list
+            Components of the state vector.
         model_params : dict
             Dictionary containing model parameters.
+        self.r : float
+            Global risk-free interest rate.
+        self.lmbda : float
+            Mean reversion rate.
+        self.sigma : float
+            Long-term volatility.
+        self.xi : float
+            Volatility of volatility.
+        self.rho : float
+            Correlation coefficient.
         """
-        super().__init__(drift=self._heston_drift, diffusion=self._heston_diffusion, diffusion_prime=self._heston_diffusion_prime, **model_params)
+        state = ['S', 'V']
+        super().__init__(state=state, drift=self._drift, diffusion=self._diffusion, diffusion_prime=self._diffusion_prime, **model_params)
     
-    def _heston_drift(self, S, V):
+    def _drift(self, S, V):
         """
-        Drift term for the Heston model.
+        Model drift
 
         Parameters
         ---
@@ -27,9 +42,9 @@ class HestonModel(StochasticModel):
         """
         return np.array([self.r * S, self.lmbda * (self.sigma ** 2 - V)])
 
-    def _heston_diffusion(self, S, V):
+    def _diffusion(self, S, V):
         """ 
-        Compute Heston model volatility.
+        Model volatility
         
         Parameters
         ---
@@ -40,10 +55,9 @@ class HestonModel(StochasticModel):
         """
         return np.array([[S * np.sqrt(np.abs(V)), 0], [self.rho * self.xi * np.sqrt(np.abs(V)), np.sqrt(1 - self.rho ** 2) * self.xi * np.sqrt(np.abs(V))]])
     
-    def _heston_diffusion_prime(self, S, V):
+    def _diffusion_prime(self, S, V):
         """
-        Compute derivative of the Heston model diffusion coefficient e.g. for use in
-        Milstein scheme.
+        Compute derivative of the model volatility e.g. for use in Milstein scheme.
         
         Parameters
         ---

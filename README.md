@@ -65,6 +65,7 @@ python build.py --config config.json
 - Plot line on stock price graph to show option being priced by price_option
 - Use call-put parity to price put options
 - Change config file to ini or add file explaining config json
+- Exactly solvable models for analytical results - geometric brownian motion (Black Scholes)
 
 ### New Directions
 - Exact simulation of diffusions

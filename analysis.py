@@ -14,10 +14,9 @@ def get_directory(file_path):
     """
     return os.path.dirname(file_path)
 
-def plot_trajectory(directory, figsize=(10,10)):
+def plot_trajectory(directory, figsize=(14,10)):
     """
-    Plot stock price and implied volatility trajectories from simulation data.
-    (Specific to Heston model (S,V) at present, needs to be generalised)
+    Plot state trajectories from simulation data.
 
     Parameters
     ---
@@ -28,34 +27,32 @@ def plot_trajectory(directory, figsize=(10,10)):
     """
     # Identify file paths
     t_file_path = os.path.join(directory, "t.npy")
-    S_file_path = os.path.join(directory, "S.npy")
-    V_file_path = os.path.join(directory, "V.npy")
+    samples_file_path = os.path.join(directory, "samples.npy")
     # Load files
     t = np.load(t_file_path)
-    S = np.load(S_file_path)
-    V = np.load(V_file_path)
+    samples = np.load(samples_file_path, allow_pickle=True).item()
+    dim = len(samples)
 
     # Create figure and plot price and volatility on separate axes
-    fig, (ax1, ax2) = plt.subplots(2,1, figsize=figsize)
+    fig, ax = plt.subplots(dim, 1, figsize=figsize)
+    ax = np.atleast_1d(ax)
     # Plot samples 
-    for i in range(S.shape[0]):
-        ax1.plot(t, S[i], alpha=0.5)
-    ax1.set_xlabel('Time')
-    ax1.set_ylabel('Price')
-    ax1.set_title("Stock price")
-    ax1.grid(True, alpha=0.5)
-    for i in range(V.shape[0]): 
-        ax2.plot(t, V[i], alpha=0.5)
-    ax2.set_xlabel('Time')
-    ax2.set_ylabel('Volatility')
-    ax2.set_title("Implied volatility")
-    ax2.grid(True, alpha=0.5)
+    for cpt in range(dim): # Loop over dimensions of model
+        cpt_var = list(samples.keys())[cpt]
+        data = samples[cpt_var]
+        for i in range(data.shape[0]): # Loop over number of paths
+            ax[cpt].plot(t, data[i, :], alpha=0.5)
+            ax[cpt].set_xlabel('Time')
+            ax[cpt].set_ylabel(cpt_var)
+            ax[cpt].grid(True, alpha=0.5)
     plt.tight_layout()
 
     # Save plot to output file
     output_file = os.path.join(get_directory(t_file_path), "trajectory_plot.png")
     plt.savefig(output_file, dpi=400)
     print(f"Trajectory plot saved to {output_file}")
+
+    plt.close()
 
 def price_option(directory, K, maturity):
     """
@@ -72,18 +69,19 @@ def price_option(directory, K, maturity):
     """
     # Identify file paths
     t_file_path = os.path.join(directory, "t.npy")
-    S_file_path = os.path.join(directory, "S.npy")
+    samples_file_path = os.path.join(directory, "samples.npy")
     params_file_path = os.path.join(directory, "params.json")
     # Load arrays
-    S = np.load(S_file_path)
     t = np.load(t_file_path)
+    samples = np.load(samples_file_path, allow_pickle=True).item()
     # Load parameter json
     with open(params_file_path, "r") as f:
         params = json.load(f)
 
+    S = samples['S']
     # Protect against maturity outside simulated time horizon
-    if maturity > params['T']:
-        raise ValueError(f'Maturity must be between 0 and simulated horizon T. \n Provided: maturity = {maturity}, T = {params["T"]}')
+    if maturity > params['final_time']:
+        raise ValueError(f'Maturity must be between 0 and simulated final time. \n Provided: maturity = {maturity}, T = {params["T"]}')
     # Compute option price
     maturity_idx = np.searchsorted(t, maturity)
     N = S.shape[0]

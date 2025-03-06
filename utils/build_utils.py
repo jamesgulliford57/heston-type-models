@@ -83,9 +83,9 @@ def create_directory(output_dir, model_name, scheme, final_time, n, init_value, 
 
     if do_timestamp:
         timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
-        output_directory = os.path.join(output_dir, f'{model_name}_{scheme.lower()}_final_time={final_time}_n={n}_init={init_value}_num_paths={num_paths}', timestamp)
+        output_directory = os.path.join(output_dir, model_name, scheme.lower(), f'final_time={final_time}_n={n}_init={init_value}_num_paths={num_paths}', timestamp)
     else:
-        output_directory = os.path.join(output_dir, f'{model_name}_{scheme.lower()}_final_time={final_time}_n={n}_init={init_value}_num_paths={num_paths}')
+        output_directory = os.path.join(output_dir, model_name, scheme.lower(), f'final_time={final_time}_n={n}_init={init_value}_num_paths={num_paths}')
     os.makedirs(output_directory, exist_ok=True)
 
     return output_directory

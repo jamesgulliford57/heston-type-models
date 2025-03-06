@@ -64,9 +64,9 @@ class StochasticModel:
             bm_samples[:, i] = bm_samples[:, i - 1] + bm_step
             current_state = path_samples[:, i - 1]
             if dim == 1:
-                path_samples[:, i] = path_samples[:, i - 1] + self.drift(current_state) * h + self.diffusion(current_state) * bm_step
+                path_samples[:, i] = current_state + self.drift(current_state) * h + self.diffusion(current_state) * bm_step
             else:
-                path_samples[:, i] = path_samples[:, i - 1] + self.drift(*current_state) * h + np.dot(self.diffusion(*current_state), bm_step)
+                path_samples[:, i] = current_state + self.drift(*current_state) * h + np.dot(self.diffusion(*current_state), bm_step)
         # Return time and samples arrays
         return t, path_samples
     
@@ -88,21 +88,19 @@ class StochasticModel:
         if not self.diffusion_prime:
             raise ValueError('Diffusion_prime not provided. Derivative of diffusion coefficient is required to simulate Milstein scheme.')
        
-        dim = len(init_value) # Identify dimension of solution
-        samples, bm_samples = np.zeros((dim, n)), np.zeros((dim, n))  # Initialise sample and Brownian motion arrays
-        samples[:, 0] = init_value
+        dim = path_samples.shape[0] # Identify dimension of solution
+        bm_samples = np.zeros((dim, n))  # Initialise sample and Brownian motion arrays
         # Simulation loop
         for i in range(1, n):
             bm_step = np.random.normal(0, np.sqrt(h), dim)
             bm_samples[:, i] = bm_samples[:, i - 1] + bm_step
-            samples[0, i] = (samples[0, i - 1] + self.drift(samples[0, i - 1], samples[1, i - 1])[0] * h 
-                             + self.diffusion(samples[0, i - 1], samples[1, i - 1])[0, 0] * bm_step[0]
-                             + 0.5 * self.diffusion(samples[0, i - 1], samples[1, i - 1])[0, 0] * self.diffusion_prime(samples[0, i - 1], samples[1, i - 1])[0][0, 0] * (bm_step[0] ** 2 - h))
-            samples[1, i] = (samples[1, i - 1] + self.drift(samples[0, i - 1], samples[1, i - 1])[1] * h
-                             + self.diffusion(samples[0, i - 1], samples[1, i - 1])[1, 0] * bm_step[1]
-                             + 0.5 * self.diffusion(samples[0, i - 1], samples[1, i - 1])[1, 0] * self.diffusion_prime(samples[0, i - 1], samples[1, i - 1])[1][1, 0] * (bm_step[1] ** 2 - h))
-        # Return time, price, and volatility samples
-        return t, samples[0], samples[1]
+            current_state = path_samples[:, i - 1]
+            if dim == 1:
+                path_samples[:, i] = current_state + self.drift(current_state) * h + self.diffusion(current_state) * bm_step + 0.5 * self.diffusion(current_state) * self.diffusion_prime(current_state) * (bm_step ** 2 - h)
+            else:
+                path_samples[:, i] = current_state + self.drift(*current_state) * h + np.dot(self.diffusion(*current_state), bm_step) + 0.5 * np.einsum('ij,ijk->ik', self.diffusion(*current_state), self.diffusion_prime(*current_state)) @ (bm_step ** 2 - h)
+        # Return time and samples arrays
+        return t, path_samples
     
     def simulate_model(self, init_value, final_time, n, num_paths, output_directory, scheme='euler'):
         """
@@ -121,10 +119,12 @@ class StochasticModel:
         scheme : str 
             Defines scheme to be use to simulate model.
         """
-        # Initialise price and volatility arrays to hold N samples with parameter n
+        # Initialise price and volatility arrays to hold num_samples samples with discretisation parameter n
         samples = {key : np.zeros((num_paths, n)) for key in self.state}
+        # Set initial value for each path
         for i, key in enumerate(self.state):
             samples[key][:, 0] = init_value[i]
+        # Discretise time interval
         h = final_time / n
         t = np.linspace(0, final_time, n)
         # Select numerical scheme (create list of schemes in another file and use for selection)

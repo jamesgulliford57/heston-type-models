@@ -1,1 +1,0 @@
-{"r": 0.2, "lmbda": 1.0, "sigma": 0.5, "xi": 1.0, "rho": -0.5, "init_value": [1.0, 0.16], "final_time": 10.0, "n": 10000, "num_paths": 100, "scheme": "Euler"}

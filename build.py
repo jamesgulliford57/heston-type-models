@@ -47,7 +47,7 @@ def main(config_file):
     
     # Run simulation processes
     if run_simulation: 
-        print_section(f'Initiating {scheme} scheme simulation of {model_name} model with time horizon final_time={final_time} and discretisation parameter n={n}')
+        print_section(f'Initiating {scheme} scheme simulation of {model_name} model with {num_paths} paths final_time={final_time} and discretisation parameter n={n}')
         model.simulate_model(init_value=init_value, final_time=final_time, n=n, num_paths=num_paths, output_directory=output_directory, scheme=scheme)
     if run_analysis:
         print_section(f'Analysing simulation results from {output_directory}...')

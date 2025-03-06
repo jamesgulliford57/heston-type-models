@@ -39,7 +39,7 @@ class BlackScholes(StochasticModel):
         """
         return self.sigma * S
     
-    def _diffusion_prime(self):
+    def _diffusion_prime(self, S):
         """
         Compute derivative of the model volatility e.g. for use in Milstein scheme.
         """

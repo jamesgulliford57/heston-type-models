@@ -12,34 +12,38 @@ pip install -r requirements.txt (requirements tbc)
 ```
 
 ## Configuration 
-Configuration can be set within the config.json file. 
+Configuration file can be found in the config_files/ directory. Model and 
+simulation parameters can be varied within the files.
 ### Example Configuration
 ```bash
-{
-    "model_params": {
-        "r": 0.2,
-        "lmbda": 1.0,
-        "sigma": 0.5,
-        "xi": 1.0,
-        "rho": -0.5
-    },
+[model]
+model_name = black_scholes 
 
-    "init_value": [1, 0.16],
-    "T": 10.0,
-    "n": 10000,
-    "N": 100,
-    "scheme": "Euler",
+[model_params]
+r = 0.2
+q = 0.0
+sigma = 0.2
 
-    "output_dir" : "data",
-    "do_timestamp" : false,
+[simulation]
+init_value = 1.0
+final_time = 10.0 
+n = 10000
+num_paths = 100
+scheme = milstein
 
-    "run_simulation" : true,
-    "run_analysis" : true, 
-    "run_option_pricing" : true, 
-    "strike_price": 4,
-    "maturity": 5.0
-    
-}
+[output]
+output_dir = data
+do_timestamp = false
+
+[workflow]
+run_simulation = true
+run_analysis = true
+
+[option]
+run_option_pricing = true
+option_type = call
+strike_price = 4
+maturity = 5.0
 ```
 ## Run
 ```bash

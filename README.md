@@ -1,7 +1,7 @@
 # Heston-Type Models
 
 ## Overview
-This package simulates stochastic volatility models and prices European options 
+This package simulates stochastic financial models and prices European options 
 
 ## Installation
 Clone the repository and install dependencies:

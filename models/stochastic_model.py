@@ -129,23 +129,23 @@ class StochasticModel:
         t = np.linspace(0, final_time, n)
         # Select numerical scheme (create list of schemes in another file and use for selection)
         if scheme == 'euler' or scheme == 'Euler':
-            for i in range(num_paths):
-                if i % 10 == 0 and i > 0:
-                    print(f'Simulation {i}/{num_paths} complete')
-                path_samples = {key : samples[key][i, :] for key in self.state}
+            for path in range(num_paths):
+                if path % 10 == 0 and path > 0:
+                    print(f'Simulation {path}/{num_paths} complete')
+                path_samples = {key : samples[key][path, :] for key in self.state}
                 path_samples = np.vstack([value for value in path_samples.values()])
                 t, path_samples = self._euler_maryuama_scheme(path_samples, n, h, t)
                 for j, key in enumerate(self.state):
-                    samples[key][i, :] = path_samples[j]
+                    samples[key][path, :] = path_samples[j]
         elif scheme == 'milstein' or scheme == 'Milstein':
-            for i in range(num_paths):
-                if i % 10 == 0 and i > 0:
-                    print(f'Simulation {i}/{num_paths} complete')
-                path_samples = {key : samples[key][i, :] for key in self.state}
+            for path in range(num_paths):
+                if path % 10 == 0 and path > 0:
+                    print(f'Simulation {path}/{num_paths} complete')
+                path_samples = {key : samples[key][path, :] for key in self.state}
                 path_samples = np.vstack([value for value in path_samples.values()])
                 t, path_samples = self._milstein_scheme(path_samples, n, h, t)
                 for j, key in enumerate(self.state):
-                    samples[key][i, :] = path_samples[j]
+                    samples[key][path, :] = path_samples[j]
         else:
             raise ValueError(f'scheme "{scheme}" not recognised')
         # Finish simulation and write data to npy file for analysis

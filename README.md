@@ -53,25 +53,22 @@ python build.py --config config_file/<model_name>.ini
 ## To-do
 ### Fixes
 - Fix negative volatilities
-- Add other models and ability to select chosen model in config file
-- Stochastic Model should not be specific to dimensions and variables of Heston model. also atm only work in 2D. At the moment Milstein scheme is specific to Heston.
 - Protect against nonsensical inputs
-- Replace generic terms like S and V with expalantory terms like price and volatility in state vectors
-- Add model parameters to class docstrings
 
 ### New Features
 - Performance metrics
    - Strong and weak error
    - Convergence
 - Volatility surface
+- Add more models
 - Parallelise
 - Add time decorator
 - First hitting time
-- More choice of plots
-- Plot line on stock price graph to show option being priced by price_option
+- Plotting
 - Use call-put parity to price put options
-- Change config file to ini or add file explaining config json
 - Exactly solvable models for analytical results - geometric brownian motion (Black Scholes)
+- How can we be sure this is all doing the right thing
+- Seem to get very different paths for different schemes is this expected?
 
 ### New Directions
 - Exact simulation of diffusions

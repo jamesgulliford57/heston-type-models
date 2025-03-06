@@ -52,6 +52,8 @@ python build.py --config config.json
 - Add other models and ability to select chosen model in config file
 - Stochastic Model should not be specific to dimensions and variables of Heston model. also atm only work in 2D. At the moment Milstein scheme is specific to Heston.
 - Protect against nonsensical inputs
+- Replace generic terms like S and V with expalantory terms like price and volatility in state vectors
+- Add model parameters to class docstrings
 
 ### New Features
 - Performance metrics

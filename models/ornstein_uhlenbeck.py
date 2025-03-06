@@ -1,9 +1,9 @@
 from models.stochastic_model import StochasticModel
 
-class BlackScholes(StochasticModel):
+class OrnsteinUhlenbeck(StochasticModel):
     """
-    Heston model describing random evolution of stock price with 
-    global drift and volatility.
+    Orstein-Uhlenbeck model describing random evolution of stock price with 
+    mean reverting drift and global volatility.
     """
     def __init__(self, **model_params):
         """
@@ -25,7 +25,7 @@ class BlackScholes(StochasticModel):
         S : float
             Stock price
         """
-        return (self.r - self.q) * S
+        return self.kappa * (self.eta - S)
 
     def _diffusion(self, S):
         """ 
@@ -36,12 +36,12 @@ class BlackScholes(StochasticModel):
         S : float
             Stock price
         """
-        return self.sigma * S
+        return self.lmbda
     
     def _diffusion_prime(self, S):
         """
         Compute derivative of the model volatility e.g. for use in Milstein scheme.
         """
-        return self.sigma
+        return 0
 
 

@@ -6,7 +6,7 @@ This package simulates stochastic financial models and prices European options.
 ## Installation
 Clone the repository and install dependencies:
 ```bash
-git clone https://github.com/yourusername/heston-type-models.git
+git clone https://github.com/jamesgulliford57/heston-type-models.git
 cd heston-type-models
 pip install -r requirements.txt (requirements tbc)
 ```

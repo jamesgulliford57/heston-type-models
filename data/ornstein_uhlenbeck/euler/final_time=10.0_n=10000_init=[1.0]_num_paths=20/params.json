@@ -1,1 +1,0 @@
-{"kappa": 0.1, "eta": 0.03, "lmbda": 0.15, "risk_free_rate": 0.05, "init_value": [1.0], "final_time": 10.0, "n": 10000, "num_paths": 20, "scheme": "euler"}

@@ -49,7 +49,7 @@ maturity = 5.0
 ```
 ## Run
 ```bash
-python build.py --config config_files/<model_name>.ini
+python build.py --config config_files/model_names.ini
 ```
 
 ## To-do

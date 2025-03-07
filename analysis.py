@@ -25,7 +25,7 @@ def plot_trajectory(directory, figsize=(14,10)):
     figsize : tuple
         Size of figure to be plotted.
     """
-    plt.style.use('seaborn-darkgrid')
+    plt.style.use('ggplot')
     plt.rcParams.update({
         'font.size': 14,
         'axes.labelsize': 16,

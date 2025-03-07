@@ -16,4 +16,4 @@ __pycache__/
 
 # Specific folders
 archive/
-#data/
+data/

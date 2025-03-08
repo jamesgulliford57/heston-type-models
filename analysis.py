@@ -25,7 +25,10 @@ def plot_trajectory(directory, figsize=(14,10)):
     figsize : tuple
         Size of figure to be plotted.
     """
+<<<<<<< HEAD
     plt.style.use('ggplot')
+=======
+>>>>>>> c7384ba (Added Cox-Ingersoll-Ross model, but got one chain)
     plt.rcParams.update({
         'font.size': 14,
         'axes.labelsize': 16,

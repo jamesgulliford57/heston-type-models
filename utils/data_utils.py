@@ -42,33 +42,24 @@ def write_json(output_directory, **data_arrays):
         print(f"Data saved in {output_directory}")
     
 
-def update_json(json_path, iat, eff_sample_size):
-    import os 
+def update_json(json_path, **items):
+    from os import path 
     import json 
-    
-    if os.path.exists(json_path):
+
+    if path.exists(json_path):
         with open(json_path, 'r+', encoding='utf-8') as f:
             try:
                 data = json.load(f)
             except json.JSONDecodeError:
                 data = {}
-            # Update data
-            data['iat'] = round(iat, 4)
-            data['eff_sample_size'] = round(eff_sample_size)
+            for key, value in items.items():
+                data[key] = value
             
-            # Move file pointer to the start of the file
             f.seek(0)
-            # Overwrite with updated JSON
             json.dump(data, f, indent=4)
-            # Truncate in case the new content is shorter
             f.truncate()
     else:
-        # If file doesn't exist, just create it
-        data = {
-            'iat': round(iat, 4),
-            'eff_sample_size': round(eff_sample_size)
-        }
         with open(json_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=4)
+            json.dump(items, f, indent=4)
 
     return data

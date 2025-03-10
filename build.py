@@ -12,7 +12,7 @@ def main(config_file):
     config_file : str
         Path to the INI config file containing simulation parameters and options.
     """
-    # Load configuration from INI file
+    # Load configuration
     config = configparser.ConfigParser()
     config.read(config_file)
     # Model
@@ -61,6 +61,6 @@ def main(config_file):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Run model workflow based on configuration file.")
-    parser.add_argument('--config', type=str, default='config_files/config.ini', help="Path to the INI configuration file.")
+    parser.add_argument('--config', type=str, default='config_files/black_scholes.ini', help="Path to the INI configuration file.")
     args = parser.parse_args()
     main(args.config)

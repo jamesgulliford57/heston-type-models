@@ -62,6 +62,7 @@ python build.py --config config_files/model_name.ini
    - Strong and weak error
    - Convergence
 - Volatility surface
+- Convergence of pricing variance with number of paths and discretisation
 - Add more models
 - Parallelise
 - Add time decorator

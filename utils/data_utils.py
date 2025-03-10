@@ -37,7 +37,7 @@ def write_json(output_directory, **data_arrays):
         for array_name, array_data in data_arrays.items():
             file_path = join(output_directory, f"{array_name}.json")
             with open(file_path, "w") as f:
-                  dump(array_data, f)
+                  dump(array_data, f, indent=4)
 
         print(f"Data saved in {output_directory}")
     

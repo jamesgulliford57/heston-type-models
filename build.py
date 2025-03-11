@@ -22,9 +22,7 @@ def main(config_file):
     model_params = {key: parse_value(config.get("model_params", key)) 
                     for key in config.options("model_params")}
     # Simulation parameters
-    init_value = config.get("simulation", "init_value")
-    init_value = parse_possible_list(init_value)
-    
+    init_value = parse_possible_list(config.get("simulation", "init_value"))
     final_time = config.getfloat("simulation", "final_time")
     n = config.getint("simulation", "n")
     num_paths = config.getint("simulation", "num_paths")
@@ -42,11 +40,10 @@ def main(config_file):
     
     # Create output directory
     output_directory = create_directory(output_dir, model_name, scheme, final_time, n, init_value, num_paths, do_timestamp)
-    # Instantiate model dynamically
-    model = ModelClass(**model_params)
     
     # Run simulation processes
-    if run_simulation: 
+    if run_simulation:
+        model = ModelClass(**model_params) # Instantiate model dynamically
         print_section(f'Initiating {scheme} scheme simulation of {model_name} model with {num_paths} paths final_time={final_time} and discretisation parameter n={n}')
         model.simulate_model(init_value=init_value, final_time=final_time, n=n, num_paths=num_paths, output_directory=output_directory, scheme=scheme)
     if run_analysis:

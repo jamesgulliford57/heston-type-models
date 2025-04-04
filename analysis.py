@@ -36,10 +36,10 @@ def plot_trajectory(directory, figsize=(14,10)):
         'legend.fontsize': 14,
     })
     # Identify file paths
-    t_file_path = os.path.join(directory, "t.npy")
+    time_values_file_path = os.path.join(directory, "time_values.npy")
     samples_file_path = os.path.join(directory, "samples.npy")
     # Load files
-    t = np.load(t_file_path)
+    time_values = np.load(time_values_file_path)
     samples = np.load(samples_file_path, allow_pickle=True).item()
     dim = len(samples)
 
@@ -54,7 +54,7 @@ def plot_trajectory(directory, figsize=(14,10)):
         data = samples[cpt_var]
         for path in range(data.shape[0]): # Loop over number of paths
             color = cmap(path % 10)
-            ax[cpt].plot(t, data[path, :], lw=1.5, color=color, alpha=0.5)
+            ax[cpt].plot(time_values, data[path, :], lw=1.5, color=color, alpha=0.5)
         ax[cpt].set_ylabel(cpt_var.capitalize(), fontsize=18)
         ax[cpt].tick_params(axis='both', which='major', labelsize=14)
         ax[cpt].grid(True, linestyle='--', linewidth=0.8, alpha=0.7)
@@ -64,7 +64,7 @@ def plot_trajectory(directory, figsize=(14,10)):
     fig.tight_layout(rect=[0, 0, 1, 0.95])
 
     # Save plot to output file
-    output_file = os.path.join(get_directory(t_file_path), "trajectory_plot.png")
+    output_file = os.path.join(get_directory(time_values_file_path), "trajectory_plot.png")
     plt.savefig(output_file, dpi=400)
     print(f"Trajectory plot saved to {output_file}")
 
@@ -84,26 +84,35 @@ def price_option(directory, strike, maturity):
         Option maturity.
     """
     # Identify file paths
-    t_file_path = os.path.join(directory, "t.npy")
+    time_values_file_path = os.path.join(directory, "time_values.npy")
     samples_file_path = os.path.join(directory, "samples.npy")
-    params_file_path = os.path.join(directory, "params.json")
+    output_file_path = os.path.join(directory, "output.json")
     # Load arrays
-    t = np.load(t_file_path)
+    time_values = np.load(time_values_file_path)
     samples = np.load(samples_file_path, allow_pickle=True).item()
     # Load parameter json
-    with open(params_file_path, "r") as f:
-        params = json.load(f)
+    with open(output_file_path, "r") as f:
+        output = json.load(f)
 
     price = samples['price']
-    risk_free_rate = params['risk_free_rate']
+    risk_free_rate = output['model_params']['risk_free_rate']
     # Protect against maturity outside simulated time horizon
-    if maturity > params['final_time']:
+    if maturity > output['final_time']:
         raise ValueError(f'Maturity must be between 0 and simulated final time. \n Provided: maturity = {maturity}, T = {params["T"]}')
     # Compute option price
-    maturity_idx = np.searchsorted(t, maturity)
+    maturity_idx = np.searchsorted(time_values, maturity)
     num_paths = price.shape[0]
     C_values = np.zeros(num_paths)
     for i in range(num_paths):
         C_values[i] = np.exp(-risk_free_rate * maturity) * max(price[i,maturity_idx] - strike, 0)
+    option_price = np.mean(C_values)
+    # Save option price to output file
+    output['option'] = {
+        'strike': strike,
+        'maturity': maturity,
+        'price': option_price
+    }
+    with open(output_file_path, 'w') as f:
+        json.dump(output, f, indent=4)
 
-    print(f'Option price: {np.mean(C_values):.2f}')
+    print(f'Option price: {option_price:.2f}')

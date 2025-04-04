@@ -14,7 +14,7 @@ class BlackScholes(StochasticModel):
     sigma : float
         Volatility.
     """
-    def __init__(self, **model_params):
+    def __init__(self, model_params):
         """
 
         Parameters
@@ -23,7 +23,7 @@ class BlackScholes(StochasticModel):
             Dictionary containing model parameters.
         """
         state = ['price']
-        super().__init__(state=state, drift=self._drift, diffusion=self._diffusion, diffusion_prime=self._diffusion_prime, **model_params)
+        super().__init__(state=state, drift=self._drift, diffusion=self._diffusion, diffusion_prime=self._diffusion_prime, model_params=model_params)
 
     def _drift(self, price):
         """

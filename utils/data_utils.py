@@ -1,10 +1,10 @@
-def write_npy(output_directory, **data_arrays):
+def write_npy(directory, **data_arrays):
         """
         Write simulation data to npy files to provided output directory.
 
         Parameters
         ---
-        output_directory : str
+        directory : str
             Path to directory where data will be saved.
         **data_arrays: keyword arguments
             Each keyword corresponds to the name of the array, and the value is the array to be saved.
@@ -14,18 +14,18 @@ def write_npy(output_directory, **data_arrays):
 
         # Save each array to its own file in the directory
         for array_name, array_data in data_arrays.items():
-            file_path = join(output_directory, f"{array_name}.npy")
+            file_path = join(directory, f"{array_name}.npy")
             save(file_path, array_data)
 
-        print(f"Data saved in {output_directory}")
+        print(f"{file_path} saved")
 
-def write_json(output_directory, **data_arrays):
+def write_json(directory, **data_arrays):
         """
         Write simulation data with a timestamp for uniqueness.
 
         Parameters
         ---
-        output_directory : str
+        directory : str
             Path to directory where data will be saved.
         **data_arrays: keyword arguments
             Each keyword corresponds to the name of the array, and the value is the array to be saved.
@@ -35,11 +35,11 @@ def write_json(output_directory, **data_arrays):
 
         # Save each array to its own file in the directory
         for array_name, array_data in data_arrays.items():
-            file_path = join(output_directory, f"{array_name}.json")
+            file_path = join(directory, f"{array_name}.json")
             with open(file_path, "w") as f:
                   dump(array_data, f, indent=4)
 
-        print(f"Data saved in {output_directory}")
+        print(f"{file_path} saved")
     
 
 def update_json(json_path, **items):

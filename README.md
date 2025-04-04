@@ -49,11 +49,14 @@ maturity = 5.0
 ```
 ## Run
 ```bash
-python build.py --config config_files/model_name.ini
+python run.py --config config_files/model_name.ini
 ```
 
 ## To-do
 ### Fixes
+- Range of volatilities and prices to plot surface 
+- Parallelise over volatilities/prices/paths, possibly with a hybrid scheme
+
 - Fix negative volatilities
 - Protect against nonsensical inputs
 

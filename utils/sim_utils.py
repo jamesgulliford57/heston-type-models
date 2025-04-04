@@ -1,4 +1,4 @@
-def print_section(message, empty_lines_before=1, empty_lines_after=1):
+def print_section(message):
     """
     Print a formatted section with separators and optional empty lines.
 
@@ -6,19 +6,13 @@ def print_section(message, empty_lines_before=1, empty_lines_after=1):
     ---
     message : str
         Message to be displayed in the section.
-    empty_lines_before : int
-        Number of empty lines to be printed before the section.
-    empty_lines_after : int
-        Number of empty lines to be printed after the section.
     """
     from colorama import Fore, Style
     
     separator_length=len(message)
-    print("\n" * empty_lines_before, end="")  # Add empty lines before the section
     print(Fore.GREEN + "=" * separator_length)
     print(Fore.GREEN + message)
     print(Fore.GREEN + "=" * separator_length + Style.RESET_ALL)
-    print("\n" * empty_lines_after, end="")  # Add empty lines after the section
 
 def progress_bar_decorator(desc="Simulating", unit="step"):
     """

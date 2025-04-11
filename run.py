@@ -68,6 +68,7 @@ def main(config_file):
     if run_option_pricing:
         print_section(f'Pricing option with strike price K={strike_price} and maturity T_M={maturity}...')
         anl.price_option(directory, strike_price, maturity)
+        anl.implied_volatility(directory)
     
     print_section("Workflow Complete!")
 

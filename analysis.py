@@ -98,21 +98,88 @@ def price_option(directory, strike, maturity):
     risk_free_rate = output['model_params']['risk_free_rate']
     # Protect against maturity outside simulated time horizon
     if maturity > output['final_time']:
-        raise ValueError(f'Maturity must be between 0 and simulated final time. \n Provided: maturity = {maturity}, T = {params["T"]}')
+        raise ValueError(f'Maturity must be between 0 and simulated final time. \n Provided: maturity = {maturity}, T = {output["T"]}')
     # Compute option price
     maturity_idx = np.searchsorted(time_values, maturity)
     num_paths = price.shape[0]
     C_values = np.zeros(num_paths)
+    P_values = np.zeros(num_paths)
     for i in range(num_paths):
         C_values[i] = np.exp(-risk_free_rate * maturity) * max(price[i,maturity_idx] - strike, 0)
-    option_price = np.mean(C_values)
+        P_values[i] = np.exp(-risk_free_rate * maturity) * max(strike - price[i,maturity_idx], 0)
+    call_price = np.mean(C_values)
+    put_price = np.mean(P_values)
     # Save option price to output file
     output['option'] = {
         'strike': strike,
         'maturity': maturity,
-        'price': option_price
+        'call_price': call_price,
+        'put_price': put_price 
     }
     with open(output_file_path, 'w') as f:
         json.dump(output, f, indent=4)
 
-    print(f'Option price: {option_price:.2f}')
+    print(f'Call option price: {call_price:.2f}')
+    print(f'Put option price: {put_price:.2f}')
+
+def price_call_black_scholes(stock_price, strike, maturity, risk_free_rate, sigma):
+    """
+    Calculate the Black-Scholes call option price. Test numerically obtained 
+    option price against analytical solution or use to determine implied volatility.
+
+    Parameters
+    ---
+    stock_price : float
+        Current stock price.
+    strike : float
+        Option strike price.
+    maturity : float
+        Time to maturity.
+    risk_free_rate : float
+        Risk-free rate.
+    sigma : float
+        Volatility of the underlying asset.
+
+    Returns
+    ---
+    float
+        Call option price.
+    """
+    from scipy.stats import norm
+    d1 = (np.log(stock_price / strike) + (risk_free_rate + 0.5 * sigma ** 2) * maturity) / (sigma * np.sqrt(maturity))
+    d2 = d1 - sigma * np.sqrt(maturity)
+    return stock_price * norm.cdf(d1) - strike * np.exp(-risk_free_rate * maturity) * norm.cdf(d2)
+
+def implied_volatility(directory):
+    """
+    Compute implied volatility from option price and model parameters.
+
+    Parameters
+    ---
+    directory : str
+        Path to directory containing simulation data.
+    """
+    from scipy.optimize import brentq
+    # Identify file paths
+    output_file_path = os.path.join(directory, "output.json")
+    # Load parameter json
+    with open(output_file_path, "r") as f:
+        output = json.load(f)
+    
+    # Extract parameters from output
+    risk_free_rate = output['model_params']['risk_free_rate']
+    strike = output['option']['strike']
+    maturity = output['option']['maturity']
+    call_price = output['option']['call_price']
+    stock_price = output['initial_value'][0]
+    
+    # Compute implied volatility using Black-Scholes formula
+    objective_function = lambda sigma: price_call_black_scholes(stock_price=stock_price, strike=strike, maturity=maturity, risk_free_rate=risk_free_rate, sigma=sigma) - call_price
+    implied_vol = brentq(objective_function, 1e-6, 1.0)
+    print(f'Implied volatility: {implied_vol:.2f}')
+
+    with open(output_file_path, 'w') as f:
+        output['implied_volatility'] = implied_vol
+        json.dump(output, f, indent=4)
+
+    return implied_vol

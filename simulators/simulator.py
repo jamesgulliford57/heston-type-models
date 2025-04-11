@@ -58,6 +58,7 @@ class Simulator(metaclass=ABCMeta):
             path_samples = {key : samples[key][path, :] for key in self.state}
             path_samples = np.vstack([value for value in path_samples.values()])
             path_samples = self.sim_path(path_samples=path_samples, discretisation_interval=discretisation_interval)
+            path_samples = np.clip(path_samples, a_min=0, a_max=None)  # Ensure non-negativity
             for j, key in enumerate(self.state):
                 samples[key][path, :] = path_samples[j]
 
@@ -65,6 +66,7 @@ class Simulator(metaclass=ABCMeta):
         print(f'{self.simulator_name} simulation complete')
         # Write output files
         write_npy(directory=directory, samples=samples, time_values=time_values) # Samples 
+        self.initial_value = self.initial_value.tolist()  # Convert initial value to list for JSON serialization
         output = {key : value for key, value in self.__dict__.items() if isinstance(value, (int, float, list, str, dict))}
         write_json(directory=directory, output=output)  
 

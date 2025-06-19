@@ -32,7 +32,7 @@ class StochasticModel(metaclass=ABCMeta):
         if diffusion_prime: # If model contains derivative of diffusion coefficient
             self.diffusion_prime = diffusion_prime
         # Unpack model parameters
-        self.model_params = model_params
+        self.model_params = model_params | {'state' : state}
         for key, value in model_params.items():
             setattr(self, key, value) 
 

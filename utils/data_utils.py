@@ -63,3 +63,26 @@ def update_json(json_path, **items):
             json.dump(items, f, indent=4)
 
     return data
+
+def read_json(json_path):
+    """
+    Read data from a json file.
+
+    Parameters
+    ---
+    json_path : str
+        Path to the json file.
+    """
+    import json
+    import os
+
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, 'r') as f:
+                output = json.load(f)
+        except json.JSONDecodeError:
+            output = {}
+    else:
+        output = {}
+
+    return output

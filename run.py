@@ -52,7 +52,7 @@ def main(config_file):
         if model_class is None:
             raise ValueError(f"Model class '{model_name}' not found. Available: {list_files_excluding('models', 'model.py')}")
         model = model_class(model_params=model_params) # Instantiate model dynamically
-        print_section(f"Initiating {simulator_name}  simulation of {model_name} model with {simulator_params['number_of_paths']} paths final_time={simulator_params['final_time']} and discretisation parameter n={simulator_params['discretisation_parameter']}...")
+        print_section(f"Initiating {simulator_name} simulation of {model_name} model with {simulator_params['number_of_paths']} paths final time={simulator_params['final_time']} and discretisation parameter n={simulator_params['discretisation_parameter']}...")
 
         simulator_class = globals().get(simulator_name)
         if simulator_class is None:
@@ -63,12 +63,13 @@ def main(config_file):
     
     if run_analysis:
         print_section(f'Analysing simulation results from {directory}...')
-        anl.plot_trajectory(directory)
+        anl.plot_trajectory(directory=directory)
+        anl.plot_final_time_histogram(directory=directory)
     
     if run_option_pricing:
         print_section(f'Pricing option with strike price K={strike_price} and maturity T_M={maturity}...')
-        anl.price_option(directory, strike_price, maturity)
-        anl.implied_volatility(directory)
+        anl.price_option(directory=directory, strike=strike_price, maturity=maturity)
+        anl.implied_volatility(directory=directory)
     
     print_section("Workflow Complete!")
 

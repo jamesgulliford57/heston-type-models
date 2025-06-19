@@ -61,6 +61,7 @@ python run.py --config config_files/model_name.ini
 - Protect against nonsensical inputs
 
 ### New Features
+- Add American options - expectation of discounted payoff for optimal exercise strategy
 - Performance metrics
    - Strong and weak error
    - Convergence

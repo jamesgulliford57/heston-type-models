@@ -2,6 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+from utils.data_utils import read_json
 
 def get_directory(file_path):
     """
@@ -14,7 +15,7 @@ def get_directory(file_path):
     """
     return os.path.dirname(file_path)
 
-def plot_trajectory(directory, figsize=(14,10)):
+def plot_trajectory(directory, figsize=(14, 10)):
     """
     Plot state trajectories from simulation data.
 
@@ -64,7 +65,7 @@ def plot_trajectory(directory, figsize=(14,10)):
     fig.tight_layout(rect=[0, 0, 1, 0.95])
 
     # Save plot to output file
-    output_file = os.path.join(get_directory(time_values_file_path), "trajectory_plot.png")
+    output_file = os.path.join(directory, "trajectory_plot.png")
     plt.savefig(output_file, dpi=400)
     print(f"Trajectory plot saved to {output_file}")
 
@@ -151,6 +152,7 @@ def price_call_black_scholes(stock_price, strike, maturity, risk_free_rate, sigm
     return stock_price * norm.cdf(d1) - strike * np.exp(-risk_free_rate * maturity) * norm.cdf(d2)
 
 def implied_volatility(directory):
+
     """
     Compute implied volatility from option price and model parameters.
 
@@ -183,3 +185,46 @@ def implied_volatility(directory):
         json.dump(output, f, indent=4)
 
     return implied_vol
+
+def plot_final_time_histogram(directory, figsize=(14, 10)):
+    """
+    Plot histogram from simulation data.
+
+    Parameters
+    ---
+    directory : str
+        Path to directory containing simulation data.
+    figsize : tuple
+        Size of figure to be plotted.
+    """
+    # Identify file paths
+    samples_file_path = os.path.join(directory, "samples.npy")
+    output_path = os.path.join(directory, "output.json")
+    # Load files
+    samples = np.load(samples_file_path, allow_pickle=True).item()
+    dim = len(samples)
+    
+    output = read_json(json_path=output_path)
+    simulator_name = output['simulator_name']
+    model_name = output['model_name']
+    state = output['model_params']['state']
+
+    fig, ax = plt.subplots(dim, 1, figsize=figsize)
+    plt.style.use('ggplot')
+    ax = np.atleast_1d(ax)
+    
+    for idx, cpt in enumerate(state):
+        samples_cpt = samples[cpt][:, -1].flatten()
+        ax[idx].hist(samples_cpt, bins=50, alpha=0.6, density=True, color='firebrick', label=cpt)
+        ax[idx].grid(True, alpha=0.6)
+        ax[idx].set_xlim(np.percentile(samples_cpt, [1, 99]))
+        ax[idx].legend(frameon=True, facecolor='white', edgecolor='none', fontsize=12, loc='upper right')
+    
+    fig.suptitle(f'{model_name} {simulator_name} Histogram')
+    
+    # Save plot to output file
+    output_file = os.path.join(directory, "histogram.png")
+    plt.savefig(output_file, dpi=400)
+    print(f"Histogram saved to {output_file}")
+
+    plt.close()

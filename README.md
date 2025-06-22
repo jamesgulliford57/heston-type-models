@@ -35,11 +35,6 @@ number_of_paths = 100
 
 [output]
 output_directory = output/heston/milstein_simulator/test
-
-[option]
-run_option_pricing = True
-strike_price = 2.5
-maturity = 5.0
 ```
 ## Run
 ```bash

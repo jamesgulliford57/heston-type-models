@@ -1,7 +1,7 @@
 # Heston-Type Models
 
 ## Overview
-This Python package simulates numerical solutions to financial asset stochastic differential equations and prices European options.
+This Python package simulates numerical solutions to financial asset stochastic differential equations and prices European options. This work is WIP.
 
 ## Installation
 Clone the repository and install dependencies:

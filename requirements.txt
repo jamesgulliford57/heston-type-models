@@ -1,0 +1,5 @@
+numpy>=1.21
+matplotlib>=3.4
+scipy>=1.7
+colorama>=0.4
+configparser>=5.0

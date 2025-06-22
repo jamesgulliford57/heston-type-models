@@ -1,10 +1,10 @@
-from abc import ABCMeta, abstractmethod
 import numpy as np
+from abc import ABCMeta, abstractmethod
 from utils.data_utils import write_json, write_npy
 
 class Simulator(metaclass=ABCMeta):
     """
-    Abstract base class for all simulators.
+    Base class for simulators.
     """
     def __init__(self, model, simulator_params):
         """
@@ -12,11 +12,13 @@ class Simulator(metaclass=ABCMeta):
 
         Parameters
         ---
+        model : StochasticModel
+            Model to be simulated.
         simulator_params : dict
-            Dictionary containing simulator parameters.
+            Dictionary of simulator parameters.
         """
         self.simulator_name = self.__class__.__name__
-        self.model = model 
+        self.model = model
         self.model_name = model.__class__.__name__
         self.model_params = model.model_params
         self.state = model.state
@@ -24,55 +26,46 @@ class Simulator(metaclass=ABCMeta):
         self.drift = model.drift
         self.diffusion = model.diffusion
         self.diffusion_prime = model.diffusion_prime
-        # Unpack simulator parameters
         for key, value in simulator_params.items():
             setattr(self, key, value)
-        
-        if isinstance(self.initial_value, float):
-            self.initial_value = np.array([self.initial_value])
-        elif isinstance(self.initial_value, list):
-            self.initial_value = np.array(self.initial_value)
+        self.initial_value = np.atleast_1d(self.initial_value)
 
     def sim(self, directory):
         """
         Simulates numerical solution to SDE.
 
         Parameters
-        ---
+        ----------
         directory : str
-            Directory to write output files to.
+            Output directory to write to.
         """
-        # Initialise price and volatility arrays to hold num_samples samples with discretisation parameter n
-        samples = {state_component : np.zeros((self.number_of_paths, self.discretisation_parameter)) for state_component in self.state}
-        # Set initial value for each path
-        for i, key in enumerate(self.state):
-            samples[key][:, 0] = self.initial_value[i]
-        # Discretise time interval
+        # Setup paths and discretise interval
         discretisation_interval = self.final_time / self.discretisation_parameter
         time_values = np.linspace(0, self.final_time, self.discretisation_parameter)
-        
+        samples = {'time' : time_values} | {state_component :
+            np.zeros((self.number_of_paths, self.discretisation_parameter)) for state_component in self.state}
+        for path_index, state_component in enumerate(self.state):
+            samples[state_component][:, 0] = self.initial_value[path_index]
         # Simulate paths
         for path in range(self.number_of_paths):
-            if path % 10 == 0 and path > 0:
-                print(f'Path {path}/{self.number_of_paths} simulated')
-            path_samples = {key : samples[key][path, :] for key in self.state}
+            if path > 0 and path % (self.number_of_paths // 10) == 0:
+                print(f'Path {path}/{self.number_of_paths} simulated.')
+            path_samples = {state_component : samples[state_component][path, :] for state_component in self.state}
             path_samples = np.vstack([value for value in path_samples.values()])
             path_samples = self.sim_path(path_samples=path_samples, discretisation_interval=discretisation_interval)
             path_samples = np.clip(path_samples, a_min=0, a_max=None)  # Ensure non-negativity
-            for j, key in enumerate(self.state):
-                samples[key][path, :] = path_samples[j]
-
-        # Finish simulation and write data to npy file for analysis
-        print(f'{self.simulator_name} simulation complete')
-        # Write output files
-        write_npy(directory=directory, samples=samples, time_values=time_values) # Samples 
-        self.initial_value = self.initial_value.tolist()  # Convert initial value to list for JSON serialization
-        output = {key : value for key, value in self.__dict__.items() if isinstance(value, (int, float, list, str, dict))}
-        write_json(directory=directory, output=output)  
+            for component_index, state_component in enumerate(self.state):
+                samples[state_component][path, :] = path_samples[component_index]
+        # Write outputs
+        write_npy(directory=directory, samples=samples)
+        self.initial_value = self.initial_value.tolist()  # Convert to list for JSON serialization
+        output = {key : value for key, value in self.__dict__.items() if
+                  isinstance(value, (int, float, list, str, dict))}
+        write_json(directory=directory, output=output)
 
     @abstractmethod
     def sim_path(self):
         """
-        Abstract method for simulating a path.
+        Abstract method for simulating a single path.
         """
         pass

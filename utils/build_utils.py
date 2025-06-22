@@ -8,7 +8,7 @@ def parse_value(value):
         return ast.literal_eval(value)
     except (ValueError, SyntaxError):
         return value
-    
+
 def parse_possible_list(value):
     """
     Parse input that is either a list or a single int or float.
@@ -47,64 +47,22 @@ def parse_possible_list(value):
 
 def to_camel_case(s):
     """
-    Convert a snake_case string to CamelCase.
-    
-    For example, "black_scholes" becomes "BlackScholes".
+    Convert a snake_case string to CamelCase. For example, "black_scholes" becomes "BlackScholes".
     """
     return ''.join(word.capitalize() for word in s.split('_'))
-
-def create_directory(model_name, simulator_name, simulator_params={}, do_timestamp=False):
-    """
-    Create output directory for simulation results.
-
-    Parameters
-    ---
-    model_name : str
-        Name of the model being simualted.
-    scheme : str
-        Numerical scheme used to simulate model.
-    final_time : float
-        Time horizon of simulation.
-    n : int
-        Discretisation parameter, number of intervals T is divided into.
-    init_value : float
-        Initial condition for random solution trajectories.
-    num_paths : int
-        Number of trajectories to be simulated.
-    do_timestamp : bool
-        Flag to include timestamp in output directory name.
-    """
-
-    import datetime
-    import os 
-
-    final_time = simulator_params['final_time']
-    discretisation_parameter = simulator_params['discretisation_parameter']
-    initial_value = simulator_params['initial_value']
-    number_of_paths = simulator_params['number_of_paths']
-
-    if do_timestamp:
-        timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
-        output_directory = os.path.join('data', model_name, simulator_name, f'T={final_time}_n={discretisation_parameter}_init={initial_value}_paths={number_of_paths}', timestamp)
-    else:
-        output_directory = os.path.join('data', model_name, simulator_name, f'T={final_time}_n={discretisation_parameter}_init={initial_value}_paths={number_of_paths}')
-    os.makedirs(output_directory, exist_ok=True)
-
-    return output_directory
 
 def load_class(model_name):
     """
     Dynamically load class based on provided model name.
-    
+
     Parameters
-    ---
+    ----------
     model_name : str
         The name of the model.
     """
     import importlib
-
-    module_name = model_name.lower()  
-    class_name = to_camel_case(model_name) 
+    module_name = model_name.lower()
+    class_name = to_camel_case(model_name)
     module = importlib.import_module(f"models.{module_name}")
     return getattr(module, class_name)
 
@@ -113,7 +71,7 @@ def list_files_excluding(directory, exclude_files=None):
     List files in a directory excluding those in the exclude_files list.
 
     Parameters
-    ---
+    ----------
     directory : str
         The directory to list files from.
     exclude_files : list

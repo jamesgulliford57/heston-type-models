@@ -1,9 +1,9 @@
 def write_npy(directory, **data_arrays):
         """
-        Write simulation data to npy files to provided output directory.
+        Write simulation data to npy files.
 
         Parameters
-        ---
+        ----------
         directory : str
             Path to directory where data will be saved.
         **data_arrays: keyword arguments
@@ -11,20 +11,17 @@ def write_npy(directory, **data_arrays):
         """
         from os.path import join
         from numpy import save
-
-        # Save each array to its own file in the directory
         for array_name, array_data in data_arrays.items():
             file_path = join(directory, f"{array_name}.npy")
             save(file_path, array_data)
-
-        print(f"{file_path} saved")
+        print(f"{file_path} saved.")
 
 def write_json(directory, **data_arrays):
         """
-        Write simulation data with a timestamp for uniqueness.
+        Write simulation parameters to json.
 
         Parameters
-        ---
+        ----------
         directory : str
             Path to directory where data will be saved.
         **data_arrays: keyword arguments
@@ -32,50 +29,24 @@ def write_json(directory, **data_arrays):
         """
         from os.path import join
         from json import dump
-
-        # Save each array to its own file in the directory
         for array_name, array_data in data_arrays.items():
             file_path = join(directory, f"{array_name}.json")
             with open(file_path, "w") as f:
                   dump(array_data, f, indent=4)
+        print(f"{file_path} saved.")
 
-        print(f"{file_path} saved")
-    
-
-def update_json(json_path, **items):
-    from os import path 
-    import json 
-
-    if path.exists(json_path):
-        with open(json_path, 'r+', encoding='utf-8') as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
-            for key, value in items.items():
-                data[key] = value
-            
-            f.seek(0)
-            json.dump(data, f, indent=4)
-            f.truncate()
-    else:
-        with open(json_path, 'w', encoding='utf-8') as f:
-            json.dump(items, f, indent=4)
-
-    return data
 
 def read_json(json_path):
     """
     Read data from a json file.
 
     Parameters
-    ---
+    ----------
     json_path : str
         Path to the json file.
     """
     import json
     import os
-
     if os.path.exists(json_path):
         try:
             with open(json_path, 'r') as f:

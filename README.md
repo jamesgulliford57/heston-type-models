@@ -50,6 +50,7 @@ python sample_analysis/plot_trajectory <output_directory_path>
 - Range of volatilities and prices to plot surface
 - Parallelise over volatilities/prices/paths, possibly with a hybrid scheme in Fortran
 - Error handling
+- Implied volatility - sometimes get negative values and would also think would more reliably be close to actual SDE volatility
 
 ### New Features
 - Add American options - expectation of discounted payoff for optimal exercise strategy

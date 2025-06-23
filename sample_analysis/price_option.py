@@ -12,9 +12,9 @@ def price_option(directory, strike, maturity):
     ----------
     directory : str
         Path to directory containing simulation data.
-    strike : float or str
+    strike : float
         Option strike price.
-    maturity : float or str
+    maturity : float
         Option maturity.
     """
     samples_file_path = os.path.join(directory, "samples.npy")
@@ -41,13 +41,11 @@ def price_option(directory, strike, maturity):
         P_values[i] = np.exp(-risk_free_rate * maturity) * max(strike - price[i,maturity_idx], 0)
     call_price = np.mean(C_values)
     put_price = np.mean(P_values)
-    # Save option price to output file
-    output['option'] = {'strike': strike, 'maturity': maturity, 'call_price': call_price, 'put_price': put_price}
-    with open(output_file_path, 'w') as f:
-        json.dump(output, f, indent=4)
 
     print(f'Call option price: {call_price:.2f}')
     print(f'Put option price: {put_price:.2f}')
 
+    return call_price, put_price
+
 if __name__ == "__main__":
-    price_option(sys.argv[1], sys.argv[2], sys.argv[3])
+    price_option(sys.argv[1], float(sys.argv[2]), float(sys.argv[3]))

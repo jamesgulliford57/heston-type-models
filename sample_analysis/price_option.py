@@ -6,7 +6,7 @@ import numpy as np
 
 def price_option(directory, strike, maturity):
     """
-    Compute average price for an option with strike price K and maturity T given simulated paths.
+    Compute average price for European call option with strike price K and maturity T given simulated paths.
 
     Parameters
     ----------
@@ -26,26 +26,24 @@ def price_option(directory, strike, maturity):
         output = json.load(f)
     price = samples['price']
     risk_free_rate = output['model_params']['risk_free_rate']
-    strike, maturity = float(strike), float(maturity)
     # Protect against maturity outside simulated time horizon
     if maturity > output['final_time']:
         raise ValueError(f'Maturity must be between 0 and simulated final time. \n'
-                         f'Provided: maturity = {maturity}, T = {output["T"]}')
+                         f'Provided: maturity={maturity}, T={output["T"]}')
     # Compute option price
     maturity_idx = np.searchsorted(time_values, maturity)
     num_paths = price.shape[0]
     C_values = np.zeros(num_paths)
-    P_values = np.zeros(num_paths)
-    for i in range(num_paths):
-        C_values[i] = np.exp(-risk_free_rate * maturity) * max(price[i,maturity_idx] - strike, 0)
-        P_values[i] = np.exp(-risk_free_rate * maturity) * max(strike - price[i,maturity_idx], 0)
+    for path_index in range(num_paths):
+        C_values[path_index] = np.exp(-risk_free_rate * maturity) * max(price[path_index, maturity_idx] - strike, 0)
     call_price = np.mean(C_values)
-    put_price = np.mean(P_values)
 
-    print(f'Call option price: {call_price:.2f}')
-    print(f'Put option price: {put_price:.2f}')
+    print(f'European call (K={strike}, T={maturity}) price: {call_price:.2g}')
 
-    return call_price, put_price
+    return call_price
 
 if __name__ == "__main__":
-    price_option(sys.argv[1], float(sys.argv[2]), float(sys.argv[3]))
+    directory = sys.argv[1]
+    strike = float(sys.argv[2])
+    maturity = float(sys.argv[3])
+    price_option(directory=directory, strike=strike, maturity=maturity)

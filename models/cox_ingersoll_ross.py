@@ -34,7 +34,7 @@ class CoxIngersollRoss(StochasticModel):
         price : float
             Asset price
         """
-        return self.kappa * (self.eta - abs(price))
+        return self.kappa * (self.eta - price)
 
     def _diffusion(self, price):
         """
@@ -45,7 +45,7 @@ class CoxIngersollRoss(StochasticModel):
         price : float
             Asset price
         """
-        return self.lmbda * (abs(price) ** 0.5)
+        return self.lmbda * price ** 0.5
 
     def _diffusion_prime(self, price):
         """

@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import numpy as np
 from price_option import price_option
 from price_call_black_scholes import price_call_black_scholes
 
@@ -25,7 +26,11 @@ def implied_volatility(directory, strike, maturity):
         output = json.load(f)
     risk_free_rate = output['model_params']['risk_free_rate']
     stock_price = output['initial_value'][0]
-    call_price = price_option(directory=directory, strike=strike, maturity=maturity)[0]
+    call_price = price_option(directory=directory, strike=strike, maturity=maturity)
+    intrinsic_value = max(stock_price - strike * np.exp(-risk_free_rate * maturity), 0)
+    if call_price <= intrinsic_value:
+        print("Call price is below intrinsic value — invalid for implied volatility.")
+        return None
     # Numerically solve for implied volatility using Black-Scholes formula as objective function
     objective_function = lambda sigma: price_call_black_scholes(stock_price=stock_price, strike=strike,
                                                                 maturity=maturity, risk_free_rate=risk_free_rate,
@@ -36,4 +41,7 @@ def implied_volatility(directory, strike, maturity):
     return implied_vol
 
 if __name__ == "__main__":
-    implied_volatility(sys.argv[1], float(sys.argv[2]), float(sys.argv[3]))
+    directory = sys.argv[1]
+    strike = float(sys.argv[2])
+    maturity = float(sys.argv[3])
+    implied_volatility(directory=directory, strike=strike, maturity=maturity)

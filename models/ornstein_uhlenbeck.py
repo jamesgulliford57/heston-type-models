@@ -35,7 +35,7 @@ class OrnsteinUhlenbeck(StochasticModel):
         price : float
             Asset price
         """
-        return self.kappa * (self.eta - abs(price))
+        return self.kappa * (self.eta - price)
 
     def _diffusion(self, price):
         """

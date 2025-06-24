@@ -35,7 +35,7 @@ class BlackScholes(StochasticModel):
         price : float
             Asset price
         """
-        return (self.risk_free_rate - self.q) * abs(price)
+        return (self.risk_free_rate - self.q) * price
 
     def _diffusion(self, price):
         """
@@ -46,7 +46,7 @@ class BlackScholes(StochasticModel):
         price : float
             Asset price
         """
-        return self.sigma * abs(price)
+        return self.sigma * price
 
     def _diffusion_prime(self, price):
         """

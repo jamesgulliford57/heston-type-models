@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import numpy as np
+from scipy.optimize import brentq
 from price_option import price_option
 from price_call_black_scholes import price_call_black_scholes
 
@@ -20,7 +21,6 @@ def implied_volatility(directory, strike, maturity):
     maturity : float
         Option maturity.
     """
-    from scipy.optimize import brentq
     output_file_path = os.path.join(directory, "output.json")
     with open(output_file_path, "r") as f:
         output = json.load(f)

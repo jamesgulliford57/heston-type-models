@@ -2,7 +2,6 @@ import os
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-from price_option import price_option
 from implied_volatility import implied_volatility
 
 
@@ -24,8 +23,6 @@ def plot_volatility_smile(directory, low_strike, high_strike, maturity, figsize=
         Size of figure to be plotted.
     """
     strikes = np.linspace(low_strike, high_strike, 100)
-    option_prices = [price_option(directory=directory, strike=strike, maturity=maturity)
-                            for strike in strikes]
     implied_volatilities = [implied_volatility(directory=directory, strike=strike, maturity=maturity)
                             for strike in strikes]
 

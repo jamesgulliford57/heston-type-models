@@ -1,6 +1,7 @@
 import numpy as np
 from abc import ABCMeta, abstractmethod
 from utils.data_utils import write_json, write_npy
+from utils.sim_utils import timer
 
 class Simulator(metaclass=ABCMeta):
     """
@@ -30,6 +31,7 @@ class Simulator(metaclass=ABCMeta):
             setattr(self, key, value)
         self.initial_value = np.atleast_1d(self.initial_value)
 
+    @timer
     def sim(self, directory):
         """
         Simulates numerical solution to SDE.

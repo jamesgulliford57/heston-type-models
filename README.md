@@ -47,13 +47,14 @@ python sample_analysis/plot_trajectory <output_directory_path>
 
 ## To-do
 ### Fixes
-- Range of volatilities and prices to plot surface
-- Parallelise over volatilities/prices/paths, possibly with a hybrid scheme in Fortran
 - Error handling
-- Implied volatility - sometimes get negative values and would also think would more reliably be close to actual SDE volatility
+
 
 ### New Features
-- Add American options - expectation of discounted payoff for optimal exercise strategy
+- Strong error on black_scholes model
+   - Average value of separation of generated samples from sim and geometric brownian motion
+- Plot volatility smiles and reproduce expected shapes in different regimes
+- Volatility surface
 - Performance metrics
    - Strong and weak error
    - Convergence
@@ -61,7 +62,7 @@ python sample_analysis/plot_trajectory <output_directory_path>
 - Convergence of pricing variance with number of paths and discretisation
 - Add more models
 - Parallelise
-   - mpi4py slow. Consider running expensive parts in Fortran
+   - mpi4py slow. Consider running expensive parts in Fortranx
 - First hitting time
 - Use call-put parity to price put options
 - Exactly solvable models for analytical results - geometric brownian motion (Black Scholes)
@@ -70,6 +71,9 @@ python sample_analysis/plot_trajectory <output_directory_path>
    - To verify simulators test simulated vs analytical black scholes option prices and implied volatilities run multiple and show convergence
 - Seem to get very different paths for different schemes is this expected?
 - Distribution transport properties - source of extra validation?
+- Jump-diffusion model
+- Hull-White model (mean reverting rates)
+- Add American options - expectation of discounted payoff for optimal exercise strategy
 
 ### New Directions
 - Exact simulation of diffusions

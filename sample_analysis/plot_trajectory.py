@@ -43,5 +43,9 @@ def plot_trajectory(directory, figsize=(14, 10)):
 
     plt.close()
 
+    return fig, ax
+
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        raise ValueError("Usage: python plot_trajectory.py <directory>")
     plot_trajectory(sys.argv[1])

@@ -61,9 +61,9 @@ class Simulator(metaclass=ABCMeta):
         # Write outputs
         write_npy(directory=directory, samples=samples)
         self.initial_value = self.initial_value.tolist()  # Convert to list for JSON serialization
-        output = {key : value for key, value in self.__dict__.items() if
+        params = {key : value for key, value in self.__dict__.items() if
                   isinstance(value, (int, float, list, str, dict))}
-        write_json(directory=directory, output=output)
+        write_json(directory=directory, params=params)
 
     @abstractmethod
     def sim_path(self):

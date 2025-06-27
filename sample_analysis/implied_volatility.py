@@ -21,11 +21,11 @@ def implied_volatility(directory, strike, maturity):
     maturity : float
         Option maturity.
     """
-    output_file_path = os.path.join(directory, "output.json")
-    with open(output_file_path, "r") as f:
-        output = json.load(f)
-    risk_free_rate = output['model_params']['risk_free_rate']
-    stock_price = output['initial_value'][0]
+    params_file_path = os.path.join(directory, "params.json")
+    with open(params_file_path, "r") as f:
+        params = json.load(f)
+    risk_free_rate = params['model_params']['risk_free_rate']
+    stock_price = params['initial_value'][0]
     call_price = price_option(directory=directory, strike=strike, maturity=maturity)
     intrinsic_value = max(stock_price - strike * np.exp(-risk_free_rate * maturity), 0)
     if call_price <= intrinsic_value:
@@ -35,12 +35,21 @@ def implied_volatility(directory, strike, maturity):
     objective_function = lambda sigma: price_call_black_scholes(stock_price=stock_price, strike=strike,
                                                                 maturity=maturity, risk_free_rate=risk_free_rate,
                                                                 sigma=sigma) - call_price
-    implied_vol = brentq(objective_function, 1e-6, 10.0)
-    print(f'Implied volatility: {implied_vol:.2f}')
-
-    return implied_vol
+    try:
+        implied_vol, results = brentq(objective_function, 1e-6, 100.0, full_output=True)
+    except ValueError as e:
+        print(f'Implied volatility root finding failed. Error: {e}')
+        return None
+    if results.converged:
+        print(f'Implied volatility: {implied_vol:.2f}')
+        return implied_vol
+    print(f'Implied volatility root finding failed to converge in {results.iterations} iterations. '
+          f'Error: {results.flag}')
+    return None
 
 if __name__ == "__main__":
+    if len(sys.argv) < 4:
+        raise ValueError("Usage: python implied_volatility.py <directory> <strike> <maturity>")
     directory = sys.argv[1]
     strike = float(sys.argv[2])
     maturity = float(sys.argv[3])

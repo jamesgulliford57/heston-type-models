@@ -21,7 +21,7 @@ def main(config_file):
     """
     # Load configuration
     if not os.path.exists(config_file):
-        raise FileNotFoundError(f"Config file '{config_file}' not found."
+        raise FileNotFoundError(f"Config file '{config_file}' not found. "
                                 f"Available: {os.listdir('config_files')}")
     config = configparser.ConfigParser()
     config.read(config_file)
@@ -54,5 +54,7 @@ def main(config_file):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        raise ValueError("Usage: python run.py <directory> <config_file>")
     config_file = sys.argv[1]
     main(config_file=config_file)

@@ -57,3 +57,12 @@ def read_json(json_path):
         output = {}
 
     return output
+
+def get_color_map(num_colors):
+    import numpy as np
+    import matplotlib.colors as mcolors
+    cmap = mcolors.LinearSegmentedColormap.from_list("BlackToLightRed",
+                                                     ["#000000", "#300000", "#600000", "#900000", "#C00000",
+                                                      "#F00000", "#FF3333", "#FF6666", "#FF9999"])
+    colors = cmap(np.linspace(0, 1, num_colors))
+    return colors, cmap

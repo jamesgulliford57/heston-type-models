@@ -46,27 +46,34 @@ python sample_analysis/plot_trajectory <output_directory_path>
 ```
 
 ## To-do
-### Fixes
-- Error handling
-
+- Volatility surface
+   - Save surface data to avoid having to run calculations each time. Load from file if it exists.
 
 ### New Features
 - Strong error on black_scholes model
    - Average value of separation of generated samples from sim and geometric brownian motion
 - Plot volatility smiles and reproduce expected shapes in different regimes
-- Volatility surface
 - Performance metrics
    - Strong and weak error
    - Convergence
-- Volatility surface
 - Convergence of pricing variance with number of paths and discretisation
 - Add more models
 - Parallelise
    - mpi4py slow. Consider running expensive parts in Fortranx
 - First hitting time
-- Use call-put parity to price put options
+- Variance reduction
+   - IS
+   - Control variates
+- Returns and stationarity
+   - Plot histogram of returns
+   - Test for order of integration
+   - JB test
+- Compare prices and implied volatilities of different simulation methods on single plot
 - Exactly solvable models for analytical results - geometric brownian motion (Black Scholes)
 - How can we be sure this is all doing the right thing
+   - Test time t distribution of SDEs with nicely behaved dynamics
+   - Tests of anything except models can be performed on Black Scholes geo BM
+      - Log-normally distributed time-t prices
    - Geo BM has exact solution perform KS test on distributions of simulated and analytic BS samples and use as convergence metric
    - To verify simulators test simulated vs analytical black scholes option prices and implied volatilities run multiple and show convergence
 - Seem to get very different paths for different schemes is this expected?
@@ -79,3 +86,14 @@ python sample_analysis/plot_trajectory <output_directory_path>
 - Exact simulation of diffusions
    - Simulate BM skeleton and accept/reject based on ratio of measures
    - Almost certainly doable but need to ascertain the benefits of this approach
+- Stochastic rate models
+   - Pricing and discounting with variable rates
+- Rough volatility models
+   - Recent paper suggest fractional Brownian motion better models stock prices
+   - Implement and compare with vanilla BM
+- Neural SDEs
+   - Learn drift and diffusion from real data
+   - Use torchsde
+- Greeks with automatic differentiation
+   - Use Jax to calculate Greeks on the fly
+- Multiple asset portfolios

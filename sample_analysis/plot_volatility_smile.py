@@ -14,7 +14,7 @@ def plot_volatility_smile(directories, low_strike, high_strike, maturity, figsiz
 
     Parameters
     ----------
-    directory : str
+    directories : list
         Path to directory containing simulation data.
     low_strike : float
         Lowest strike to loop over.
@@ -36,11 +36,18 @@ def plot_volatility_smile(directories, low_strike, high_strike, maturity, figsiz
             params = json.load(f)
         simulator_name = params['simulator_name']
         model_name = params['model_name']
-
-        implied_volatilities = [implied_volatility(directory=directory, strike=strike, maturity=maturity)
-                                for strike in strikes]
-
+        implied_volatility_results = [implied_volatility(directory=directory, strike=strike, maturity=maturity)
+                                      for strike in strikes]
+        implied_volatilities, implied_volatility_errors = list(zip(*implied_volatility_results))
+        implied_volatilities, implied_volatility_errors = (np.array(implied_volatilities, dtype=float),
+                                                           np.array(implied_volatility_errors, dtype=float))
+        none_mask = np.array([vol is not None for vol in implied_volatilities])
+        strikes, implied_volatilities, implied_volatility_errors = (strikes[none_mask], implied_volatilities[none_mask],
+                                                                    implied_volatility_errors[none_mask])
         ax.plot(strikes, implied_volatilities, color=colors[index], label=f'Model: {model_name}\n{simulator_name}')
+        ax.fill_between(strikes, implied_volatilities - implied_volatility_errors,
+                        implied_volatilities + implied_volatility_errors, alpha=0.2, color='firebrick',
+                        label='MC Error')
 
     ax.set_xlabel('Strike')
     ax.set_ylabel('Implied Volatility')
@@ -56,6 +63,7 @@ def plot_volatility_smile(directories, low_strike, high_strike, maturity, figsiz
     plt.close()
 
     return fig, ax
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 5:

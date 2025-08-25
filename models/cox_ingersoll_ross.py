@@ -1,18 +1,19 @@
 from models.stochastic_model import StochasticModel
 
+
 class CoxIngersollRoss(StochasticModel):
     """
     Cox-Ingersoll-Ross model describing random evolution of stock price with mean reverting drift and global
-    volatility. Differentiated from normal OU model by the inclusion of sqrt(price) coefficient of volatility.
+    volatility. Variant of OU model with local coefficient of volatility.
 
     dS_t = κ(η - S_t) dt + λ√S_t dW_t
 
     where:
-        - S_t is the asset price or rate at time t,
-        - κ is the mean reversion rate,
-        - η is the long-term mean,
-        - λ is the volatility coefficient,
-        - W_t is a standard Brownian motion.
+        - S_t = asset price or rate at time t,
+        - κ = mean reversion rate,
+        - η = long-term mean,
+        - λ = volatility coefficient,
+        - W_t = Brownian motion.
     """
     def __init__(self, **model_params):
         """
@@ -22,10 +23,19 @@ class CoxIngersollRoss(StochasticModel):
             Dictionary containing model parameters.
         """
         state = ['price']
-        super().__init__(state=state, drift=self._drift, diffusion=self._diffusion,
-                         diffusion_prime=self._diffusion_prime, **model_params)
+        super().__init__(state=state, drift=self.drift, diffusion=self.diffusion,
+                         diffusion_prime=self.diffusion_prime, **model_params)
+        if not hasattr(self, 'kappa'):
+            raise TypeError('CoxIngersollRoss class cannot be instantiated without mean reversion rate, kappa. '
+                            'Please set in model_params in config_file.')
+        if not hasattr(self, 'eta'):
+            raise TypeError('CoxIngersollRoss class cannot be instantiated without long-term mean, eta. '
+                            'Please set in model_params in config_file.')
+        if not hasattr(self, 'lmbda'):
+            raise TypeError('CoxIngersollRoss class cannot be instantiated without volatility coefficient, lmbda. '
+                            'Please set in model_params in config_file.')
 
-    def _drift(self, price):
+    def drift(self, price):
         """
         Model drift
 
@@ -36,7 +46,7 @@ class CoxIngersollRoss(StochasticModel):
         """
         return self.kappa * (self.eta - price)
 
-    def _diffusion(self, price):
+    def diffusion(self, price):
         """
         Model volatility
 
@@ -47,7 +57,7 @@ class CoxIngersollRoss(StochasticModel):
         """
         return self.lmbda * price ** 0.5
 
-    def _diffusion_prime(self, price):
+    def diffusion_prime(self, price):
         """
         Compute derivative of the model volatility e.g. for use in Milstein scheme.
 

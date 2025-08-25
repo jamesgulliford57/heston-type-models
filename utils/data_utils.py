@@ -16,6 +16,7 @@ def write_npy(directory, **data_arrays):
             save(file_path, array_data)
         print(f"{file_path} saved.")
 
+
 def write_json(directory, **data_arrays):
         """
         Write simulation parameters to json.
@@ -57,6 +58,7 @@ def read_json(json_path):
         output = {}
 
     return output
+
 
 def get_color_map(num_colors):
     import numpy as np

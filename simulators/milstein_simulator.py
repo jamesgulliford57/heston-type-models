@@ -1,6 +1,7 @@
 from simulators.simulator import Simulator
 import numpy as np
 
+
 class MilsteinSimulator(Simulator):
     """
     Milstein simulator for simulating stochastic processes.
@@ -13,7 +14,7 @@ class MilsteinSimulator(Simulator):
         ----------
         model : StochasticModel
             Model to be simulated.
-        simulator_specific_params : dict
+        simulator_params : dict
             Dictionary containing simulator-specific parameters.
         """
         super().__init__(model=model, simulator_params=simulator_params)
@@ -23,7 +24,7 @@ class MilsteinSimulator(Simulator):
 
     def sim_path(self, path_samples, discretisation_interval):
         """
-        Simulates one path using the Milstein scheme to solve the SDE defined by mu and sigma.
+        Simulates one path using the Milstein scheme.
 
         Parameters
         ----------
@@ -39,13 +40,13 @@ class MilsteinSimulator(Simulator):
             current_state = path_samples[:, i - 1]
             if self.dim == 1:
                 path_samples[:, i] = (current_state + self.drift(current_state) * discretisation_interval
-                + self.diffusion(current_state) * bm_step
-                + 0.5 * self.diffusion(current_state) * self.diffusion_prime(current_state)
-                * (bm_step ** 2 - discretisation_interval))
+                                      + self.diffusion(current_state) * bm_step
+                                      + 0.5 * self.diffusion(current_state) * self.diffusion_prime(current_state)
+                                      * (bm_step ** 2 - discretisation_interval))
             else:
                 path_samples[:, i] = (current_state + self.drift(*current_state) * discretisation_interval
-                + np.dot(self.diffusion(*current_state), bm_step)
-                + 0.5 * np.einsum('ij,ijk->ik', self.diffusion(*current_state), self.diffusion_prime(*current_state))
-                @ (bm_step ** 2 - discretisation_interval))
-
+                                      + np.dot(self.diffusion(*current_state), bm_step)
+                                      + 0.5 * np.einsum('ij,ijk->ik', self.diffusion(*current_state),
+                                                        self.diffusion_prime(*current_state))
+                                      @ (bm_step ** 2 - discretisation_interval))
         return path_samples

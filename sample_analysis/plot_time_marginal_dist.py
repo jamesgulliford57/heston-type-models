@@ -11,13 +11,13 @@ from utils.data_utils import get_color_map
 def plot_time_marginal_dist(directories, marginal_time, figsize=(12, 8)):
     """
     Plot time marginal distribution of process from simulation data. Provides option to compare against
-    analytical distribution to test for correct behaviour.
+    analytical distribution to test for correct behaviour/convergence.
 
     Parameters
     ----------
-    directory : str
+    directories : list
         Path to directory containing simulation data.
-    time : float
+    marginal_time : float
         Time at which to evaluate marginal distribution.
     figsize : tuple
         Size of figure to be plotted.
@@ -45,8 +45,9 @@ def plot_time_marginal_dist(directories, marginal_time, figsize=(12, 8)):
                              f'Final_time {final_time}')
         time_index = np.searchsorted(time_values, marginal_time)
         marginal_prices = price[:, time_index]
-
-        ax.hist(marginal_prices, bins=100, density=True, color=colors[index], alpha=0.5, edgecolor='black',
+        threshold = np.percentile(marginal_prices, 98)
+        clipped_marginal_prices = marginal_prices[marginal_prices <= threshold]
+        ax.hist(clipped_marginal_prices, bins=100, density=True, color=colors[index], alpha=0.5, edgecolor='black',
                 label=f'Empirical\nModel: {model_name}\n{simulator_name}\n{len(marginal_prices)} paths')
 
         if model_name == 'BlackScholes':
@@ -60,7 +61,6 @@ def plot_time_marginal_dist(directories, marginal_time, figsize=(12, 8)):
             x = np.linspace(min(marginal_prices), max(marginal_prices), 10000)
             lognorm_pdf = lognorm_dist.pdf(x)
             ax.plot(x, lognorm_pdf, color=colors[index], linestyle='--', label=f'Analytical\nModel: {model_name}')
-
 
     ax.set_xlabel('Price')
     ax.set_ylabel('Marginal PDF')
@@ -76,6 +76,7 @@ def plot_time_marginal_dist(directories, marginal_time, figsize=(12, 8)):
     plt.close()
 
     return fig, ax
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:

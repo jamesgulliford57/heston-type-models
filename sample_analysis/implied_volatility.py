@@ -5,6 +5,7 @@ import numpy as np
 from scipy.optimize import brentq
 from price_option import price_option
 from price_call_black_scholes import price_call_black_scholes
+from black_scholes_greeks import black_scholes_vega
 
 
 def implied_volatility(directory, strike, maturity):
@@ -24,28 +25,38 @@ def implied_volatility(directory, strike, maturity):
     params_file_path = os.path.join(directory, "params.json")
     with open(params_file_path, "r") as f:
         params = json.load(f)
+    if maturity > params['final_time'] or maturity < 0:
+        raise ValueError(f'Maturity must be between 0 and simulated final time. \n'
+                         f'Provided: maturity={maturity}, final_time={params["final_time"]}')
+    if strike < 0:
+        raise ValueError(f'Strike price must not be negative. Provided: {strike}')
     risk_free_rate = params['model_params']['risk_free_rate']
+    q = params.get('model_params', {}).get('q', 0.0)
     stock_price = params['initial_value'][0]
-    call_price = price_option(directory=directory, strike=strike, maturity=maturity)
+    call_price, call_price_error = price_option(directory=directory, strike=strike, maturity=maturity)
     intrinsic_value = max(stock_price - strike * np.exp(-risk_free_rate * maturity), 0)
     if call_price <= intrinsic_value:
         print("Call price is below intrinsic value — invalid for implied volatility.")
-        return None
+        return None, None
     # Numerically solve for implied volatility using Black-Scholes formula as objective function
     objective_function = lambda sigma: price_call_black_scholes(stock_price=stock_price, strike=strike,
                                                                 maturity=maturity, risk_free_rate=risk_free_rate,
-                                                                sigma=sigma) - call_price
+                                                                sigma=sigma, q=q) - call_price
     try:
         implied_vol, results = brentq(objective_function, 1e-6, 100.0, full_output=True)
+        vega = black_scholes_vega(stock_price=stock_price, strike=strike, maturity=maturity,
+                                  risk_free_rate=risk_free_rate, sigma=implied_vol, q=q)
+        implied_vol_error = call_price_error / vega
     except ValueError as e:
         print(f'Implied volatility root finding failed. Error: {e}')
-        return None
+        return None, None
     if results.converged:
-        print(f'Implied volatility: {implied_vol:.2f}')
-        return implied_vol
+        print(f'Implied volatility: {implied_vol:.2f} +- {implied_vol_error:.2f}')
+        return implied_vol, implied_vol_error
     print(f'Implied volatility root finding failed to converge in {results.iterations} iterations. '
           f'Error: {results.flag}')
-    return None
+    return None, None
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:

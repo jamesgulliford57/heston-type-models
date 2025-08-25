@@ -10,21 +10,21 @@ from simulators.euler_simulator import EulerSimulator
 from simulators.milstein_simulator import MilsteinSimulator
 
 
-def main(config_file):
+def main(config_path):
     """
-    Run simulation. Parameters and methods set by config_file.
+    Run simulation. Parameters and methods set by config_path.
 
     Parameters
     ----------
-    config_file : str
+    config_path : str
         Path to config file.
     """
     # Load configuration
-    if not os.path.exists(config_file):
-        raise FileNotFoundError(f"Config file '{config_file}' not found. "
-                                f"Available: {os.listdir('config_files')}")
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file '{config_path}' not found. "
+                                f"Available: {os.listdir('config_paths')}")
     config = configparser.ConfigParser()
-    config.read(config_file)
+    config.read(config_path)
     # Load parameters
     model_name = config.get("run", "model_name")
     simulator_name = config.get("run", "simulator_name")
@@ -32,13 +32,13 @@ def main(config_file):
     simulator_params = {key: parse_value(config.get("simulation", key)) for key in config.options("simulation")}
     directory = config.get("output", "output_directory")
     os.makedirs(directory, exist_ok=True)
-    # Instantiate model and simulator objects
+    # Instantiate model
     model_class = globals().get(model_name)
     if model_class is None:
         raise ValueError(
             f"Model '{model_name}' not found. Available: {list_files_excluding('models', 'model.py')}")
     model = model_class(model_params=model_params)
-
+    # Instantiate simulator
     simulator_class = globals().get(simulator_name)
     if simulator_class is None:
         raise ValueError(f"Simulator class {simulator_name} not found."
@@ -55,6 +55,6 @@ def main(config_file):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        raise ValueError("Usage: python run.py <directory> <config_file>")
-    config_file = sys.argv[1]
-    main(config_file=config_file)
+        raise ValueError("Usage: python run.py <directory> <config_path>")
+    config_path = sys.argv[1]
+    main(config_path=config_path)

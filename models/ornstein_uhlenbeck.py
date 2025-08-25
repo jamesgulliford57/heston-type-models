@@ -1,5 +1,6 @@
 from models.stochastic_model import StochasticModel
 
+
 class OrnsteinUhlenbeck(StochasticModel):
     """
     Ornstein-Uhlenbeck model describing random evolution of stock price with
@@ -8,11 +9,11 @@ class OrnsteinUhlenbeck(StochasticModel):
     dS_t = κ(η - S_t) dt + λ dW_t
 
     where:
-        - S_t is the asset price at time t,
-        - κ is the mean reversion rate,
-        - η is the long-term mean,
-        - λ is the volatility,
-        - W_t is a standard Brownian motion.
+        - S_t = asset price at time t,
+        - κ = mean reversion rate,
+        - η = long-term mean,
+        - λ = volatility,
+        - W_t = Brownian motion.
     """
     def __init__(self, **model_params):
         """
@@ -23,10 +24,19 @@ class OrnsteinUhlenbeck(StochasticModel):
             Dictionary containing model parameters.
         """
         state = ['price']
-        super().__init__(state=state, drift=self._drift, diffusion=self._diffusion,
-                         diffusion_prime=self._diffusion_prime, **model_params)
+        super().__init__(state=state, drift=self.drift, diffusion=self.diffusion,
+                         diffusion_prime=self.diffusion_prime, **model_params)
+        if not hasattr(self, 'kappa'):
+            raise TypeError('OrnsteinUhlenbeck class cannot be instantiated without mean reversion rate, kappa. '
+                            'Please set in model_params in config_file.')
+        if not hasattr(self, 'eta'):
+            raise TypeError('OrnsteinUhlenbeck class cannot be instantiated without long-term mean, eta. '
+                            'Please set in model_params in config_file.')
+        if not hasattr(self, 'lmbda'):
+            raise TypeError('OrnsteinUhlenbeck class cannot be instantiated without volatility, lmbda. '
+                            'Please set in model_params in config_file.')
 
-    def _drift(self, price):
+    def drift(self, price):
         """
         Model drift
 
@@ -37,7 +47,7 @@ class OrnsteinUhlenbeck(StochasticModel):
         """
         return self.kappa * (self.eta - price)
 
-    def _diffusion(self, price):
+    def diffusion(self, price):
         """
         Model volatility
 
@@ -48,7 +58,7 @@ class OrnsteinUhlenbeck(StochasticModel):
         """
         return self.lmbda
 
-    def _diffusion_prime(self, price):
+    def diffusion_prime(self, price):
         """
         Compute derivative of the model volatility e.g. for use in Milstein scheme.
 

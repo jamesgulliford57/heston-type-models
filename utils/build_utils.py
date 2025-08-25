@@ -9,6 +9,7 @@ def parse_value(value):
     except (ValueError, SyntaxError):
         return value
 
+
 def parse_possible_list(value):
     """
     Parse input that is either a list or a single int or float.
@@ -45,20 +46,17 @@ def parse_possible_list(value):
 
     return [value]
 
+
 def to_camel_case(s):
     """
     Convert a snake_case string to CamelCase. For example, "black_scholes" becomes "BlackScholes".
     """
     return ''.join(word.capitalize() for word in s.split('_'))
 
+
 def load_class(model_name):
     """
     Dynamically load class based on provided model name.
-
-    Parameters
-    ----------
-    model_name : str
-        The name of the model.
     """
     import importlib
     module_name = model_name.lower()
@@ -66,16 +64,10 @@ def load_class(model_name):
     module = importlib.import_module(f"models.{module_name}")
     return getattr(module, class_name)
 
+
 def list_files_excluding(directory, exclude_files=None):
     """
     List files in a directory excluding those in the exclude_files list.
-
-    Parameters
-    ----------
-    directory : str
-        The directory to list files from.
-    exclude_files : list
-        List of files to exclude from the listing.
     """
     import os
     if exclude_files is None:

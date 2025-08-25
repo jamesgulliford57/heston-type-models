@@ -1,6 +1,7 @@
 from simulators.simulator import Simulator
 import numpy as np
 
+
 class EulerSimulator(Simulator):
     """
     Euler simulator for simulating solution to SDE.
@@ -13,14 +14,14 @@ class EulerSimulator(Simulator):
         ----------
         model : StochasticModel
             Model to be simulated.
-        simulator_specific_params : dict
+        simulator_params : dict
             Dictionary containing simulator-specific parameters.
         """
         super().__init__(model=model, simulator_params=simulator_params)
 
     def sim_path(self, path_samples, discretisation_interval):
         """
-        Simulates one path using the Euler-Maruyama scheme to solve the SDE defined by mu and sigma.
+        Simulates one path using the Euler-Maruyama scheme.
 
         Parameters
         ---
@@ -37,9 +38,8 @@ class EulerSimulator(Simulator):
             current_state = path_samples[:, path_index - 1]
             if self.dim == 1:
                 path_samples[:, path_index] = (current_state + self.drift(current_state) * discretisation_interval
-                + self.diffusion(current_state) * bm_step)
+                                               + self.diffusion(current_state) * bm_step)
             else:
                 path_samples[:, path_index] = (current_state + self.drift(*current_state) * discretisation_interval
-                + np.dot(self.diffusion(*current_state), bm_step))
-        # Return time and samples arrays
+                                               + np.dot(self.diffusion(*current_state), bm_step))
         return path_samples

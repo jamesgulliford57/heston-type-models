@@ -31,22 +31,22 @@ def plot_volatility_surface(directories, low_strike, high_strike, low_maturity, 
     fig, ax = plt.subplots(1, 1, figsize=figsize, subplot_kw={"projection": "3d"})
     cmap = get_color_map(num_directories)[1]
 
-    N = 20
-    strikes = np.linspace(low_strike, high_strike, N)
-    maturities = np.linspace(low_maturity, high_maturity, N)
+    n_strikes, n_maturities = 20, 20
+    strikes = np.linspace(low_strike, high_strike, n_strikes)
+    maturities = np.linspace(low_maturity, high_maturity, n_maturities)
     for directory in directories:
         params_file_path = os.path.join(directory, 'params.json')
         with open(params_file_path, 'r') as f:
             params = json.load(f)
         simulator_name = params['simulator_name']
         model_name = params['model_name']
-
-        implied_volatilities = np.zeros((N, N))
+        implied_volatilities, implied_volatility_errors = (np.zeros((n_strikes, n_maturities)),
+                                                           np.zeros((n_strikes, n_maturities)))
         for i, strike in enumerate(strikes):
             for j, maturity in enumerate(maturities):
-                implied_volatilities[i, j] = implied_volatility(directory=directory, strike=strike,
-                                                                maturity=maturity)
-
+                implied_volatilities[i, j], implied_volatility_errors[i, j] = implied_volatility(directory=directory,
+                                                                                                 strike=strike,
+                                                                                                 maturity=maturity)
         strikes, maturities = np.meshgrid(strikes, maturities)
         ax.plot_surface(strikes, maturities, implied_volatilities.T, cmap=cmap, alpha=0.7, antialiased=True)
 
@@ -64,6 +64,7 @@ def plot_volatility_surface(directories, low_strike, high_strike, low_maturity, 
     plt.close()
 
     return fig, ax
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 6:

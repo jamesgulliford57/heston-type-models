@@ -6,7 +6,7 @@ import numpy as np
 
 def price_option(directory, strike, maturity):
     """
-    Compute average price for European call option with strike price K and maturity T given simulated paths.
+    Compute average price for European call option with strike price K and maturity T for given simulation samples.
 
     Parameters
     ----------
@@ -24,23 +24,27 @@ def price_option(directory, strike, maturity):
     params_file_path = os.path.join(directory, "params.json")
     with open(params_file_path, "r") as f:
         params = json.load(f)
+    if maturity > params['final_time'] or maturity < 0:
+        raise ValueError(f'Maturity must be between 0 and simulated final time. \n'
+                         f'Provided: maturity={maturity}, final_time={params["final_time"]}')
+    if strike < 0:
+        raise ValueError(f'Strike price must not be negative. Provided: {strike}')
     price = samples['price']
     risk_free_rate = params['model_params']['risk_free_rate']
-    # Protect against maturity outside simulated time horizon
-    if maturity > params['final_time']:
-        raise ValueError(f'Maturity must be between 0 and simulated final time. \n'
-                         f'Provided: maturity={maturity}, T={params["T"]}')
     # Compute option price
     maturity_idx = np.searchsorted(time_values, maturity)
-    num_paths = price.shape[0]
-    C_values = np.zeros(num_paths)
-    for path_index in range(num_paths):
-        C_values[path_index] = np.exp(-risk_free_rate * maturity) * max(price[path_index, maturity_idx] - strike, 0)
-    call_price = np.mean(C_values)
+    prices_at_maturity = price[:, maturity_idx]
+    payoffs = np.maximum(prices_at_maturity - strike, 0)
+    discount_factor = np.exp(-risk_free_rate * maturity)
+    call_price = discount_factor * np.mean(payoffs)
 
-    print(f'European call (K={strike:.2f}, T={maturity:.2g}) price: {call_price:.2f}')
+    n = np.shape(price)[0]
+    call_price_error = discount_factor * np.std(payoffs) / np.sqrt(n)
 
-    return call_price
+    print(f'European call (K={strike:.2f}, T={maturity:.2g}) price: {call_price:.2f} +- {call_price_error:.2f}')
+
+    return call_price, call_price_error
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:

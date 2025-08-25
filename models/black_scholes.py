@@ -1,5 +1,6 @@
 from models.stochastic_model import StochasticModel
 
+
 class BlackScholes(StochasticModel):
     """
     Black-Scholes model describing random evolution of stock price according to a geometric
@@ -8,11 +9,11 @@ class BlackScholes(StochasticModel):
     dS_t = (r - q) S_t dt + σ S_t dW_t
 
     where:
-        - S_t is the asset price at time t,
-        - r is the risk-free rate,
-        - q is the continuous dividend yield,
-        - σ is the volatility,
-        - W_t is a standard Brownian motion.
+        - S_t = asset price at time t,
+        - r = risk-free rate,
+        - q = continuous dividend yield,
+        - σ = volatility,
+        - W_t = Brownian motion.
     """
     def __init__(self, model_params):
         """
@@ -23,10 +24,16 @@ class BlackScholes(StochasticModel):
             Dictionary containing model parameters.
         """
         state = ['price']
-        super().__init__(state=state, drift=self._drift, diffusion=self._diffusion,
-                         diffusion_prime=self._diffusion_prime, model_params=model_params)
+        super().__init__(state=state, drift=self.drift, diffusion=self.diffusion,
+                         diffusion_prime=self.diffusion_prime, model_params=model_params)
+        if not hasattr(self, 'q'):
+            raise TypeError('BlackScholes class cannot be instantiated without continuous dividend yield, q. '
+                            'Please set in model_params in config_file.')
+        if not hasattr(self, 'sigma'):
+            raise TypeError('BlackScholes class cannot be instantiated without volatility, sigma. '
+                            'Please set in model_params in config_file.')
 
-    def _drift(self, price):
+    def drift(self, price):
         """
         Model drift
 
@@ -37,7 +44,7 @@ class BlackScholes(StochasticModel):
         """
         return (self.risk_free_rate - self.q) * price
 
-    def _diffusion(self, price):
+    def diffusion(self, price):
         """
         Model volatility
 
@@ -48,7 +55,7 @@ class BlackScholes(StochasticModel):
         """
         return self.sigma * price
 
-    def _diffusion_prime(self, price):
+    def diffusion_prime(self, price):
         """
         Compute derivative of the model volatility e.g. for use in Milstein scheme.
 

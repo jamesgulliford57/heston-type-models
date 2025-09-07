@@ -17,3 +17,5 @@ __pycache__/
 # Specific folders
 archive/
 output/
+.DS_Store
+.idea/
